@@ -4,19 +4,11 @@ using Photon.Pun;
 using Photon.Realtime;
 using System.Collections;
 
-
 public class MenuManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] private InputField joinField;
     [SerializeField] private InputField nameField;
     [SerializeField] private Text notifBarCanvas;
-    private NameHandler nameHandler;
-
-    private void Start()
-    {
-        NameHandler handler = FindFirstObjectByType<NameHandler>();
-        nameHandler = handler;
-    }
 
     public void CreateRoom()
     {
@@ -29,10 +21,12 @@ public class MenuManager : MonoBehaviourPunCallbacks
             return;
         }
 
+        PhotonNetwork.NickName = nameText;
+
         RoomOptions roomOptions = new RoomOptions();
         roomOptions.MaxPlayers = 4;
 
-        PhotonNetwork.CreateRoom(joinField.text, roomOptions);
+        PhotonNetwork.CreateRoom(roomText, roomOptions);
     }
 
     public void JoinRoom()
@@ -46,15 +40,15 @@ public class MenuManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        PhotonNetwork.JoinRoom(joinField.text);
+        PhotonNetwork.NickName = nameText;
+
+        PhotonNetwork.JoinRoom(roomText);
     }
 
     public override void OnJoinedRoom()
     {
-        nameHandler.name = nameField.text;
         PhotonNetwork.LoadLevel("Lobby");
     }
-
 
     public void Quit()
     {
@@ -70,7 +64,6 @@ public class MenuManager : MonoBehaviourPunCallbacks
     IEnumerator ClearNotifBar()
     {
         yield return new WaitForSeconds(3);
-
         notifBarCanvas.text = "";
     }
 }
