@@ -33,25 +33,7 @@ public class AskManager : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            button_a.onClick.Invoke();
-        }
 
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            button_b.onClick.Invoke();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            button_c.onClick.Invoke();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            button_d.onClick.Invoke();
-        }
     }
 
     private void SetTextTo()
