@@ -23,6 +23,11 @@ public class PlayerNameTag : MonoBehaviourPun
     private void LateUpdate()
     {
         nameText.transform.position = transform.position + offset;
-        nameText.transform.rotation = Quaternion.LookRotation(nameText.transform.position - cam.position);
+
+        Vector3 dir = nameText.transform.position - cam.position;
+        if (dir.sqrMagnitude > 0.0001f)
+        {
+            nameText.transform.rotation = Quaternion.LookRotation(nameText.transform.position - cam.position);
+        }
     }
 }

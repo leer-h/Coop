@@ -314,7 +314,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _bobbingSpeed: 20
   _bobbingAmount: 0.1
-  _midpoint: 2
+  _midpoint: 1
   _horizontalBobbingAmount: 0.1
   _horizontalBobbingSpeed: 10
   characterMovement: {fileID: 8016149704836949964}
@@ -607,6 +607,7 @@ GameObject:
   - component: {fileID: 1886787634584708195}
   - component: {fileID: 7518751576261797468}
   - component: {fileID: 9062417739381313293}
+  - component: {fileID: 6050181446577908959}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -805,3 +806,19 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &6050181446577908959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8748780124102501168}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b58f9da6f087ecf45b8379d26b47b932, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  meshRenderer: {fileID: 2652782655289800279}
+  renderForLocal: 0
+  renderForOthers: 1
+  disableObj: 0
