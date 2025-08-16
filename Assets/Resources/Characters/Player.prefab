@@ -119,6 +119,7 @@ GameObject:
   - component: {fileID: 1141443465377602268}
   - component: {fileID: 7786548767966808742}
   - component: {fileID: 2264367508366736719}
+  - component: {fileID: 5366471102403848140}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -151,7 +152,7 @@ Camera:
   m_GameObject: {fileID: 4103073132186862774}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 1
+  m_ClearFlags: 4
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
@@ -160,7 +161,7 @@ Camera:
   m_ShutterSpeed: 0.005
   m_Aperture: 16
   m_FocusDistance: 10
-  m_FocalLength: 50
+  m_FocalLength: 15.638705
   m_BladeCount: 5
   m_Curvature: {x: 2, y: 11}
   m_BarrelClipping: 0.25
@@ -175,7 +176,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 75
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -224,7 +225,7 @@ MonoBehaviour:
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
-  m_RenderPostProcessing: 0
+  m_RenderPostProcessing: 1
   m_Antialiasing: 0
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -317,6 +318,23 @@ MonoBehaviour:
   _horizontalBobbingAmount: 0.1
   _horizontalBobbingSpeed: 10
   characterMovement: {fileID: 8016149704836949964}
+--- !u!114 &5366471102403848140
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4103073132186862774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172515602e62fb746b5d573b38a5fe58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_IsGlobal: 1
+  priority: 0
+  blendDistance: 0
+  weight: 1
+  sharedProfile: {fileID: 11400000, guid: 2af98932cc2c5fc4dab00b4eec458d4e, type: 2}
 --- !u!1 &5953935671066964509
 GameObject:
   m_ObjectHideFlags: 0
