@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
 
-public class AskManager : MonoBehaviour
+public class AskManager : MonoBehaviourPun
 {
     [SerializeField] private Text askText;
 
@@ -28,7 +29,7 @@ public class AskManager : MonoBehaviour
 
     private void Start()
     {
-        SetTextTo();
+        photonView.RPC(nameof(RpcSetTextTo), RpcTarget.AllBuffered);
     }
 
     private void Update()
@@ -38,9 +39,15 @@ public class AskManager : MonoBehaviour
             Vector3 msgPos = new(0, 200, 0);
             HudMsg.SetHudMsg("Test", msgPos, 50, true, 3);
         }
+
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            //photonView.RPC(nameof(RpcSetTextTo), RpcTarget.AllBuffered);
+        }
     }
 
-    private void SetTextTo()
+    [PunRPC]
+    private void RpcSetTextTo()
     {
         askText.text = textAsk;
         buttonText_a.text = textButtonA;
