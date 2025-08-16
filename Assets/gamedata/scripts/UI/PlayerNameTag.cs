@@ -16,7 +16,7 @@ public class PlayerNameTag : MonoBehaviourPun
 
         if (photonView.IsMine)
         {
-            // nameText.gameObject.SetActive(false);
+            nameText.gameObject.SetActive(false);
         }
     }
 

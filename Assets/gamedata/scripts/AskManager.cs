@@ -33,7 +33,11 @@ public class AskManager : MonoBehaviour
 
     private void Update()
     {
-
+        if (Input.GetKeyDown(KeyCode.M))
+        {
+            Vector3 msgPos = new(0, 200, 0);
+            HudMsg.SetHudMsg("Test", msgPos, 50, true, 3);
+        }
     }
 
     private void SetTextTo()

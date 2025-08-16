@@ -1,28 +1,50 @@
 using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class HudMsg : MonoBehaviour
 {
-    [SerializeField] private TextMesh _txt;
-    public void SetHudMsg(string str, Vector3 pos, float size, bool useAnm, float secondToRemove)
+    public static HudMsg Instance { get; private set; }
+
+    [SerializeField] private Text _txt;
+
+    private void Awake()
     {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this);
+            return;
+        }
+        Instance = this;
+    }
+
+    public static void SetHudMsg(string str, Vector3 pos, int size, bool useAnm, float secondToRemove)
+    {
+        if (Instance == null)
+        {
+            Debug.LogWarning("HudMsg: Instance is null!");
+            return;
+        }
+
+        var _txt = Instance._txt;
+
         if (useAnm)
         {
             _txt.color = new Color(1, 1, 1, 0);
-            StartCoroutine(LerpAnm(secondToRemove));
+            Instance.StartCoroutine(Instance.LerpAnm(secondToRemove));
         }
         else
         {
             _txt.color = new Color(1, 1, 1, 1);
-            Invoke(nameof(TextRemove), secondToRemove);
+            Instance.Invoke(nameof(TextRemove), secondToRemove);
         }
 
-        _txt.transform.position = pos;
+        _txt.transform.localPosition = pos;
         _txt.text = str;
-        _txt.characterSize = size;
+        _txt.fontSize = size;
     }
 
-    IEnumerator LerpAnm(float secondToRemove)
+    private IEnumerator LerpAnm(float secondToRemove)
     {
         Color targetColor = _txt.color;
         int targetAlphaVal = 1;
