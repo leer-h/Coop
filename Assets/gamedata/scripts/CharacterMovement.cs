@@ -103,4 +103,12 @@ public class CharacterMovement : MonoBehaviourPun
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
     }
+
+    public bool IsGrounded()
+    {
+        if (!isGrounded)
+            return false;
+
+        return isGrounded;
+    }
 }
