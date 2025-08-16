@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using DG.Tweening;
 using System.Collections.Generic;
 
@@ -9,6 +9,8 @@ public class WorldUIFocusMover : MonoBehaviour
     [SerializeField] private float rayDistance = 100f;
     [SerializeField] private float duration = 0.3f;
     [SerializeField] private float focusDistance = 2f;
+    [SerializeField] private float popUpScale = 1.2f;
+    [SerializeField] private float popUpDuration = 0.2f;
 
     private Transform currentTarget;
     private Dictionary<Transform, UIOriginalData> originalData = new Dictionary<Transform, UIOriginalData>();
@@ -33,13 +35,21 @@ public class WorldUIFocusMover : MonoBehaviour
 
                 if (!originalData.ContainsKey(target))
                 {
-                    originalData[target] = new UIOriginalData(target.position, target.rotation, target.GetSiblingIndex());
+                    originalData[target] = new UIOriginalData(
+                        target.position,
+                        target.rotation,
+                        target.GetSiblingIndex(),
+                        target.localScale
+                    );
                 }
 
                 target.SetAsLastSibling();
 
                 Vector3 targetPos = playerCamera.transform.position + playerCamera.transform.forward * focusDistance;
                 target.DOMove(targetPos, duration);
+
+                target.DOScale(originalData[target].scale * popUpScale, popUpDuration)
+                      .SetLoops(2, LoopType.Yoyo);
 
                 currentTarget = target;
             }
@@ -62,7 +72,8 @@ public class WorldUIFocusMover : MonoBehaviour
         {
             UIOriginalData data = originalData[target];
             target.DOMove(data.position, duration);
-            target.rotation = data.rotation;
+            target.DORotateQuaternion(data.rotation, duration);
+            target.DOScale(data.scale, popUpDuration);
             target.SetSiblingIndex(data.siblingIndex);
         }
     }
@@ -72,12 +83,14 @@ public class WorldUIFocusMover : MonoBehaviour
         public Vector3 position;
         public Quaternion rotation;
         public int siblingIndex;
+        public Vector3 scale;
 
-        public UIOriginalData(Vector3 pos, Quaternion rot, int index)
+        public UIOriginalData(Vector3 pos, Quaternion rot, int index, Vector3 scl)
         {
             position = pos;
             rotation = rot;
             siblingIndex = index;
+            scale = scl;
         }
     }
 }
