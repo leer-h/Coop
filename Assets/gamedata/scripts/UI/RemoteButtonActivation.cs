@@ -16,7 +16,7 @@ public class RemoteButtonActivation : MonoBehaviour
     {
         if (worldUICheck == null) return;
 
-        Button button = worldUICheck.GetButton(rayDistance);
+        Button button = worldUICheck.GetUIElement<Button>(rayDistance);
 
         if (button != lastSelected)
         {

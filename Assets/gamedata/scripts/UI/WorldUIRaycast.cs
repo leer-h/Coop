@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UI;
 
 public class WorldUICheck : MonoBehaviour
 {
@@ -10,7 +9,7 @@ public class WorldUICheck : MonoBehaviour
         worldUILayer = LayerMask.NameToLayer("WorldUI");
     }
 
-    public Button GetButton(float rayDistance)
+    public T GetUIElement<T>(float rayDistance) where T : Component
     {
         Ray ray = new Ray(transform.position, transform.forward);
         RaycastHit hit;
@@ -19,10 +18,10 @@ public class WorldUICheck : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, rayDistance, layerMask))
         {
-            Button button = hit.collider.GetComponent<Button>();
-            if (button != null)
+            T component = hit.collider.GetComponent<T>();
+            if (component != null)
             {
-                return button;
+                return component;
             }
         }
 
