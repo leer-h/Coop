@@ -40,6 +40,8 @@ MonoBehaviour:
   - Fire
   - RespawnSpaceship
   - RpcSetTextTo
+  - RpcSetTexts
+  - RpcSetTextToSubjects
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1
