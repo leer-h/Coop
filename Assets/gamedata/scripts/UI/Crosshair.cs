@@ -1,12 +1,14 @@
 using UnityEngine;
 
-public class CrosshairCircle : MonoBehaviour
+public class Crosshair : MonoBehaviour
 {
     public float radius = 10f;
     public Color color = Color.white;
     public int thickness = 2;
 
     private Texture2D tex;
+
+    private static bool visible = true;
 
     void Start()
     {
@@ -17,6 +19,8 @@ public class CrosshairCircle : MonoBehaviour
 
     void OnGUI()
     {
+        if (!visible) return; // €кщо приховано Ц не малюЇмо
+
         Vector2 center = new Vector2(Screen.width / 2f, Screen.height / 2f);
         DrawCircle(center, radius, thickness);
     }
@@ -31,5 +35,20 @@ public class CrosshairCircle : MonoBehaviour
 
             GUI.DrawTexture(new Rect(point.x, point.y, thickness, thickness), tex);
         }
+    }
+
+    public static void Show()
+    {
+        visible = true;
+    }
+
+    public static void Hide()
+    {
+        visible = false;
+    }
+
+    public static void Toggle()
+    {
+        visible = !visible;
     }
 }

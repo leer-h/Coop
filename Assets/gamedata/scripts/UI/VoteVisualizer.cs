@@ -7,6 +7,7 @@ public class VoteVisualizer : MonoBehaviour
 {
     [SerializeField] private Image[] voteBars;
     [SerializeField] private float maxBarHeight = 100f;
+    [SerializeField] private float minBarHeight = 50f;
     [SerializeField] private float animationDuration = 0.3f;
 
     private Dictionary<int, int> votes = new Dictionary<int, int>();
@@ -44,7 +45,8 @@ public class VoteVisualizer : MonoBehaviour
         {
             int key = i + 1;
             float normalized = (float)votes[key] / maxVotes;
-            float targetHeight = normalized * maxBarHeight;
+
+            float targetHeight = Mathf.Max(minBarHeight, normalized * maxBarHeight);
 
             RectTransform rt = voteBars[i].rectTransform;
             Vector2 size = rt.sizeDelta;

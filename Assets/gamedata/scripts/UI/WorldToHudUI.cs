@@ -52,6 +52,8 @@ public class WorldToHudUI : MonoBehaviour
 
                 target.SetAsLastSibling();
 
+                Crosshair.Hide();
+
                 Vector3 targetPos = playerCamera.transform.position + playerCamera.transform.forward * focusDistance;
                 target.DOMove(targetPos, duration);
 
@@ -83,6 +85,8 @@ public class WorldToHudUI : MonoBehaviour
 
     private void ReturnToDefault()
     {
+        Crosshair.Show();
+
         if (currentTarget != null)
         {
             ResetTarget(currentTarget);
