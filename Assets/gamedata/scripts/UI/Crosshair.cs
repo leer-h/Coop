@@ -19,7 +19,7 @@ public class Crosshair : MonoBehaviour
 
     void OnGUI()
     {
-        if (!visible) return; // €кщо приховано Ц не малюЇмо
+        if (!visible) return;
 
         Vector2 center = new Vector2(Screen.width / 2f, Screen.height / 2f);
         DrawCircle(center, radius, thickness);
