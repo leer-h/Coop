@@ -42,6 +42,8 @@ MonoBehaviour:
   - RpcSetTextTo
   - RpcSetTexts
   - RpcSetTextToSubjects
+  - RpcReceiveVote
+  - RpcUpdateVoteVisualizer
   DisableAutoOpenWizard: 1
   ShowSettings: 0
   DevRegionSetOnce: 1

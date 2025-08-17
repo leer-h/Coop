@@ -2,7 +2,7 @@
 using DG.Tweening;
 using System.Collections.Generic;
 
-public class WorldUIFocusMover : MonoBehaviour
+public class WorldToHudUI : MonoBehaviour
 {
     [SerializeField] private WorldUICheck worldUICheck;
     [SerializeField] private Camera playerCamera;
@@ -19,6 +19,13 @@ public class WorldUIFocusMover : MonoBehaviour
     {
         if (playerCamera == null)
             playerCamera = Camera.main;
+
+        if (!Input.GetMouseButton(1))
+        {
+            ReturnToDefault();
+            return;
+        }
+
 
         RectTransform rectTransform = worldUICheck.GetUIElement<RectTransform>(rayDistance);
 
@@ -49,20 +56,37 @@ public class WorldUIFocusMover : MonoBehaviour
                 target.DOMove(targetPos, duration);
 
                 target.DOScale(originalData[target].scale * popUpScale, popUpDuration)
-                      .SetLoops(2, LoopType.Yoyo);
+                        .SetLoops(2, LoopType.Yoyo);
 
                 currentTarget = target;
             }
 
-            currentTarget.rotation = Quaternion.LookRotation(playerCamera.transform.position - currentTarget.position);
+            Quaternion lookRot;
+            FlipMarker marker = currentTarget.GetComponent<FlipMarker>();
+
+            if (marker != null && marker.flipRotation)
+            {
+                lookRot = Quaternion.LookRotation(currentTarget.position - playerCamera.transform.position);
+            }
+            else
+            {
+                lookRot = Quaternion.LookRotation(playerCamera.transform.position - currentTarget.position);
+            }
+
+            currentTarget.rotation = lookRot;
         }
         else
         {
-            if (currentTarget != null)
-            {
-                ResetTarget(currentTarget);
-                currentTarget = null;
-            }
+            ReturnToDefault();
+        }
+    }
+
+    private void ReturnToDefault()
+    {
+        if (currentTarget != null)
+        {
+            ResetTarget(currentTarget);
+            currentTarget = null;
         }
     }
 

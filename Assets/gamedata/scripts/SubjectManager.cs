@@ -1,7 +1,8 @@
-using Photon.Pun;
+﻿using Photon.Pun;
 using UnityEngine;
 using UnityEngine.UI;
 using DG.Tweening;
+using System.Collections.Generic;
 
 public class SubjectManager : MonoBehaviourPun
 {
@@ -9,6 +10,8 @@ public class SubjectManager : MonoBehaviourPun
 
     [SerializeField] private GameObject askCanvas;
     [SerializeField] private GameObject subjectCanvas;
+
+    [SerializeField] private VoteVisualizer voteVisualizer;
 
     [SerializeField] private Button button_1;
     [SerializeField] private Button button_2;
@@ -22,9 +25,17 @@ public class SubjectManager : MonoBehaviourPun
     private string textButton4 = "4";
     private string textButton5 = "5";
 
+    private Dictionary<int, int> playerVotes = new Dictionary<int, int>(); // key = ActorNumber, value = choice (1-5)
+
     void Awake()
     {
         photonView.RPC(nameof(RpcSetTextToSubjects), RpcTarget.AllBuffered);
+
+        button_1.onClick.AddListener(() => SendVote(1));
+        button_2.onClick.AddListener(() => SendVote(2));
+        button_3.onClick.AddListener(() => SendVote(3));
+        button_4.onClick.AddListener(() => SendVote(4));
+        button_5.onClick.AddListener(() => SendVote(5));
     }
 
     private void Update()
@@ -45,29 +56,53 @@ public class SubjectManager : MonoBehaviourPun
         button_5.GetComponentInChildren<Text>().text = textButton5;
     }
 
-    public void Pressed_1()
+    private void SendVote(int choice)
     {
-        Debug.Log("1 Pressed");
+        photonView.RPC(nameof(RpcReceiveVote), RpcTarget.AllBuffered, PhotonNetwork.LocalPlayer.ActorNumber, choice);
     }
 
-    public void Pressed_2()
+    [PunRPC]
+    private void RpcReceiveVote(int playerId, int choice)
     {
-        Debug.Log("2 Pressed");
+        if (PhotonNetwork.IsMasterClient)
+        {
+            playerVotes[playerId] = choice;
+
+            Dictionary<int, int> voteCounts = new Dictionary<int, int>();
+            for (int i = 1; i <= 5; i++)
+                voteCounts[i] = 0;
+            foreach (var kvp in playerVotes)
+                voteCounts[kvp.Value]++;
+
+            photonView.RPC(nameof(RpcUpdateVoteVisualizer), RpcTarget.All, voteCounts);
+        }
     }
 
-    public void Pressed_3()
+    [PunRPC]
+    private void RpcUpdateVoteVisualizer(Dictionary<int, int> voteCounts)
     {
-        Debug.Log("3 Pressed");
+        if (voteVisualizer != null)
+            voteVisualizer.UpdateVoteCounts(voteCounts);
     }
 
-    public void Pressed_4()
+    private void UpdateVoteUI()
     {
-        Debug.Log("4 Pressed");
-    }
+        Dictionary<int, int> voteCounts = new Dictionary<int, int>();
+        for (int i = 1; i <= 5; i++)
+            voteCounts[i] = 0;
 
-    public void Pressed_5()
-    {
-        Debug.Log("5 Pressed");
+        foreach (var kvp in playerVotes)
+        {
+            int choice = kvp.Value;
+            voteCounts[choice]++;
+        }
+
+        string voteSummary = "Votes: ";
+        for (int i = 1; i <= 5; i++)
+        {
+            voteSummary += $"{i}={voteCounts[i]} ";
+        }
+        Debug.Log(voteSummary);
     }
 
     private void SwitchToAsk()

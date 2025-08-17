@@ -600,6 +600,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3670dff5776f84a44887c77dac03d5ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  punchStrength: {x: 0.5, y: 0.5, z: 0}
+  punchDuration: 0.5
+  vibrato: 10
+  elasticity: 1
 --- !u!114 &2286984231700013270
 MonoBehaviour:
   m_ObjectHideFlags: 0
