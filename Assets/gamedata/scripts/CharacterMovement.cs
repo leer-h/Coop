@@ -1,8 +1,10 @@
 using UnityEngine;
+using UnityEngine.InputSystem;
 using Photon.Pun;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PhotonView))]
+[RequireComponent(typeof(PlayerInput))]
 public class CharacterMovement : MonoBehaviourPun
 {
     [Header("Movement")]
@@ -15,13 +17,17 @@ public class CharacterMovement : MonoBehaviourPun
 
     [Header("Mouse Look")]
     public Transform playerCamera;
-    public float mouseSensitivity = 100f;
     private float xRotation = 0f;
 
     private CharacterController controller;
     private Vector3 velocity;
     private bool isGrounded;
     private bool isCrouching;
+
+    private Vector2 moveInput;
+    private Vector2 lookInput;
+    private bool jumpPressed;
+    private bool crouchPressed;
 
     private void Start()
     {
@@ -42,17 +48,49 @@ public class CharacterMovement : MonoBehaviourPun
     {
         if (!photonView.IsMine) return;
 
-        MouseLook();
+        isGrounded = controller.isGrounded;
+        if (isGrounded && velocity.y < 0)
+            velocity.y = -2f;
+
+        HandleMouseLook();
         HandleMovement();
-        Jump();
-        Crouch();
-        ApplyGravity();
+        HandleJump();
+        HandleCrouch();
+
+
+        velocity.y += gravity * Time.deltaTime;
+        controller.Move(velocity * Time.deltaTime);
     }
 
-    private void MouseLook()
+    #region Input Callbacks
+    public void OnMove(InputAction.CallbackContext context)
     {
-        float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
-        float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity;
+        moveInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnLook(InputAction.CallbackContext context)
+    {
+        lookInput = context.ReadValue<Vector2>();
+    }
+
+    public void OnJump(InputAction.CallbackContext context)
+    {
+        if (context.performed) jumpPressed = true;
+    }
+
+    public void OnCrouch(InputAction.CallbackContext context)
+    {
+        if (context.performed)
+            crouchPressed = true;
+        if (context.canceled)
+            crouchPressed = false;
+    }
+    #endregion
+
+    private void HandleMouseLook()
+    {
+        float mouseX = lookInput.x;
+        float mouseY = lookInput.y;
 
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
@@ -61,54 +99,42 @@ public class CharacterMovement : MonoBehaviourPun
         transform.Rotate(Vector3.up * mouseX);
     }
 
+
     private void HandleMovement()
     {
-        isGrounded = controller.isGrounded;
-        if (isGrounded && velocity.y < 0)
-            velocity.y = -2f;
-
-        float x = Input.GetAxis("Horizontal");
-        float z = Input.GetAxis("Vertical");
-
-        Vector3 move = transform.right * x + transform.forward * z;
+        Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
         float speed = isCrouching ? crouchSpeed : walkSpeed;
 
         controller.Move(move * speed * Time.deltaTime);
     }
 
-    private void Jump()
+    private void HandleJump()
     {
-        if (Input.GetKeyDown(KeyCode.Space) && isGrounded && !isCrouching)
+        if (jumpPressed && isGrounded && !isCrouching)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
         }
+        jumpPressed = false;
     }
 
-    private void Crouch()
+    private void HandleCrouch()
     {
-        if (Input.GetKeyDown(KeyCode.LeftControl))
+        if (crouchPressed)
         {
             isCrouching = true;
             controller.height = crouchHeight;
         }
-        else if (Input.GetKeyUp(KeyCode.LeftControl))
+        else
         {
             isCrouching = false;
             controller.height = standHeight;
         }
     }
 
-    private void ApplyGravity()
-    {
-        velocity.y += gravity * Time.deltaTime;
-        controller.Move(velocity * Time.deltaTime);
-    }
-
     public bool IsGrounded()
     {
-        if (!isGrounded)
-            return false;
-
         return isGrounded;
     }
+
+    public Vector2 GetMoveInput() => moveInput;
 }

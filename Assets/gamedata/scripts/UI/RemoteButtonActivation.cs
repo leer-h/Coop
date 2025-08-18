@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class RemoteButtonActivation : MonoBehaviour
 {
@@ -9,7 +10,16 @@ public class RemoteButtonActivation : MonoBehaviour
 
     private Button lastSelected;
 
-    void Update()
+    public void OnInteract(InputAction.CallbackContext context)
+    {
+        if (context.performed && lastSelected != null)
+        {
+            var pointer = new PointerEventData(EventSystem.current);
+            ExecuteEvents.Execute(lastSelected.gameObject, pointer, ExecuteEvents.pointerClickHandler);
+        }
+    }
+
+    private void Update()
     {
         if (worldUICheck == null) return;
 
@@ -19,12 +29,6 @@ public class RemoteButtonActivation : MonoBehaviour
         {
             lastSelected = button;
             EventSystem.current.SetSelectedGameObject(button != null ? button.gameObject : null);
-        }
-
-        if (lastSelected != null && Input.GetMouseButtonDown(0))
-        {
-            var pointer = new PointerEventData(EventSystem.current);
-            ExecuteEvents.Execute(lastSelected.gameObject, pointer, ExecuteEvents.pointerClickHandler);
         }
     }
 }

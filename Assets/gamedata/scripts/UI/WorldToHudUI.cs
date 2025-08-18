@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using DG.Tweening;
 using System.Collections.Generic;
+using UnityEngine.InputSystem;
 
 public class WorldToHudUI : MonoBehaviour
 {
@@ -14,18 +15,21 @@ public class WorldToHudUI : MonoBehaviour
 
     private Transform currentTarget;
     private Dictionary<Transform, UIOriginalData> originalData = new Dictionary<Transform, UIOriginalData>();
+    private bool isFocusing;
+
+    // Збережемо Tween для скейлу
+    private Tween scaleTween;
 
     void Update()
     {
         if (playerCamera == null)
             playerCamera = Camera.main;
 
-        if (!Input.GetMouseButton(1))
+        if (!isFocusing)
         {
             ReturnToDefault();
             return;
         }
-
 
         RectTransform rectTransform = worldUICheck.GetUIElement<RectTransform>(rayDistance);
 
@@ -36,9 +40,7 @@ public class WorldToHudUI : MonoBehaviour
             if (currentTarget != target)
             {
                 if (currentTarget != null)
-                {
-                    ResetTarget(currentTarget);
-                }
+                    ResetTarget(currentTarget, true);
 
                 if (!originalData.ContainsKey(target))
                 {
@@ -51,30 +53,25 @@ public class WorldToHudUI : MonoBehaviour
                 }
 
                 target.SetAsLastSibling();
-
                 Crosshair.Hide();
                 target.GetComponentInParent<Canvas>().gameObject.layer = LayerMask.NameToLayer("WorldUI");
 
                 Vector3 targetPos = playerCamera.transform.position + playerCamera.transform.forward * focusDistance;
                 target.DOMove(targetPos, duration);
 
-                target.DOScale(originalData[target].scale * popUpScale, popUpDuration)
-                        .SetLoops(2, LoopType.Yoyo);
+                if (scaleTween != null && scaleTween.IsActive()) scaleTween.Kill();
+                scaleTween = target.DOScale(originalData[target].scale * popUpScale, popUpDuration)
+                                   .SetLoops(2, LoopType.Yoyo);
 
                 currentTarget = target;
             }
 
             Quaternion lookRot;
             FlipMarker marker = currentTarget.GetComponent<FlipMarker>();
-
             if (marker != null && marker.flipRotation)
-            {
                 lookRot = Quaternion.LookRotation(currentTarget.position - playerCamera.transform.position);
-            }
             else
-            {
                 lookRot = Quaternion.LookRotation(playerCamera.transform.position - currentTarget.position);
-            }
 
             currentTarget.rotation = lookRot;
         }
@@ -90,18 +87,23 @@ public class WorldToHudUI : MonoBehaviour
 
         if (currentTarget != null)
         {
-            currentTarget.GetComponentInParent<Canvas>().gameObject.layer = LayerMask.NameToLayer("UI");
+            Canvas parentCanvas = currentTarget.GetComponentInParent<Canvas>();
+            if (parentCanvas != null)
+                parentCanvas.gameObject.layer = LayerMask.NameToLayer("UI");
 
-            ResetTarget(currentTarget);
+            ResetTarget(currentTarget, true);
             currentTarget = null;
         }
     }
 
-    private void ResetTarget(Transform target)
+    private void ResetTarget(Transform target, bool killTween)
     {
         if (originalData.ContainsKey(target))
         {
             UIOriginalData data = originalData[target];
+
+            if (killTween && scaleTween != null && scaleTween.IsActive()) scaleTween.Kill();
+
             target.DOMove(data.position, duration);
             target.DORotateQuaternion(data.rotation, duration);
             target.DOScale(data.scale, popUpDuration);
@@ -124,4 +126,11 @@ public class WorldToHudUI : MonoBehaviour
             scale = scl;
         }
     }
+
+    #region Input Callback
+    public void OnFocusUI(InputAction.CallbackContext context)
+    {
+        isFocusing = context.ReadValue<float>() > 0f;
+    }
+    #endregion
 }

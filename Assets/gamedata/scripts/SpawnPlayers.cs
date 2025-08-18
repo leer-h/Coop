@@ -26,16 +26,6 @@ public class SpawnPlayers : MonoBehaviourPunCallbacks
         PhotonNetwork.Instantiate("Characters/Player", point, Quaternion.identity);
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.Escape))
-        {
-            PhotonNetwork.Disconnect();
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
-    }
-
     public override void OnDisconnected(DisconnectCause cause)
     {
         PhotonNetwork.LoadLevel("MainMenu");
