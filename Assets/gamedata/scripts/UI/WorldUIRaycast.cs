@@ -9,7 +9,6 @@ public class WorldUICheck : MonoBehaviour
     private Tween currentTween;
     private Vector3 originalScale;
 
-    [Header("Анімація скейлу")]
     [SerializeField] private Vector3 punchStrength = new Vector3(0.5f, 0.5f, 0f);
     [SerializeField] private float punchDuration = 0.5f;
     [SerializeField] private int vibrato = 10;

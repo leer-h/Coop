@@ -53,6 +53,7 @@ public class WorldToHudUI : MonoBehaviour
                 target.SetAsLastSibling();
 
                 Crosshair.Hide();
+                target.GetComponentInParent<Canvas>().gameObject.layer = LayerMask.NameToLayer("WorldUI");
 
                 Vector3 targetPos = playerCamera.transform.position + playerCamera.transform.forward * focusDistance;
                 target.DOMove(targetPos, duration);
@@ -89,6 +90,8 @@ public class WorldToHudUI : MonoBehaviour
 
         if (currentTarget != null)
         {
+            currentTarget.GetComponentInParent<Canvas>().gameObject.layer = LayerMask.NameToLayer("UI");
+
             ResetTarget(currentTarget);
             currentTarget = null;
         }
