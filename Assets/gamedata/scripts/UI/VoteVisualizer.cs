@@ -54,12 +54,4 @@ public class VoteVisualizer : MonoBehaviour
             rt.DOSizeDelta(new Vector2(size.x, targetHeight), animationDuration);
         }
     }
-
-    public void ResetVotes()
-    {
-        foreach (int key in votes.Keys)
-            votes[key] = 0;
-
-        UpdateBars();
-    }
 }

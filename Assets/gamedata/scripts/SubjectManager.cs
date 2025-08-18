@@ -75,6 +75,13 @@ public class SubjectManager : MonoBehaviourPun
                 voteCounts[kvp.Value]++;
 
             photonView.RPC(nameof(RpcUpdateVoteVisualizer), RpcTarget.All, voteCounts);
+
+            if (playerVotes.Count == PhotonNetwork.CurrentRoom.PlayerCount)
+            {
+                photonView.RPC(nameof(RpcSwitchToAsk), RpcTarget.All);
+
+                playerVotes.Clear();
+            }
         }
     }
 
@@ -85,7 +92,18 @@ public class SubjectManager : MonoBehaviourPun
             voteVisualizer.UpdateVoteCounts(voteCounts);
     }
 
-    private void UpdateVoteUI()
+    [PunRPC]
+    private void RpcSwitchToAsk()
+    {
+        SwitchToAsk();
+
+        if (voteVisualizer != null)
+        {
+            
+        }
+    }
+
+    /*private void UpdateVoteUI()
     {
         Dictionary<int, int> voteCounts = new Dictionary<int, int>();
         for (int i = 1; i <= 5; i++)
@@ -103,7 +121,7 @@ public class SubjectManager : MonoBehaviourPun
             voteSummary += $"{i}={voteCounts[i]} ";
         }
         Debug.Log(voteSummary);
-    }
+    }*/
 
     private void SwitchToAsk()
     {
