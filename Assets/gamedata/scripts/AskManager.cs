@@ -25,9 +25,12 @@ public class AskManager : MonoBehaviourPun
         "4"
     };
 
-    private void Awake()
+    private void Start()
     {
-        photonView.RPC(nameof(RpcSetTextTo), RpcTarget.AllBuffered);
+        if (PhotonNetwork.IsConnectedAndReady)
+        {
+            photonView.RPC(nameof(RpcSetTextTo), RpcTarget.AllBuffered);
+        }
 
         voteHandler.Init(answerButtons.Length);
         voteHandler.OnVotesUpdated += voteVisualizer.UpdateVoteCounts;

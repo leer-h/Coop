@@ -37,7 +37,7 @@ public class VoteHandler : MonoBehaviourPun
 
             photonView.RPC(nameof(RpcUpdateVotes), RpcTarget.All, SerializeVoteCounts(voteCounts));
 
-            if (PlayerVotes.Count == PhotonNetwork.CurrentRoom.PlayerCount)
+            if (PlayerVotes.Count >= PhotonNetwork.CurrentRoom.PlayerCount)
             {
                 photonView.RPC(nameof(RpcAllVoted), RpcTarget.All);
             }
