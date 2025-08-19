@@ -49,10 +49,10 @@ public class MenuManager : MonoBehaviourPunCallbacks
         PhotonNetwork.CreateRoom(roomName, roomOptions);
         NotifMsg("Creating room: " + roomName);
 
-            if (SteamAPI.IsSteamRunning())
-            {
-                SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, 4);
-            }
+        if (SteamAPI.IsSteamRunning())
+        {
+            SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, 4);
+        }
     }
 
     public override void OnCreatedRoom()
@@ -175,5 +175,10 @@ public class MenuManager : MonoBehaviourPunCallbacks
         yield return new WaitForSeconds(3);
         if (notifBarCanvas != null)
             notifBarCanvas.text = "";
+    }
+
+    public void ExitGame()
+    {
+        Application.Quit();
     }
 }

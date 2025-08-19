@@ -25,7 +25,7 @@ public class CameraEffectsEvents : MonoBehaviour
 
     private void HandleLand()
     {
-        CameraEffects.AddCamEffector("cam_land", 3f);
+        CameraEffects.AddCamEffector("cam_land", 3f, 2f);
     }
 
     private void HandleCrouch(bool isCrouching)
