@@ -61,6 +61,7 @@ public class CameraEffects : MonoBehaviour
         while (timer < clip.length)
         {
             GameObject temp = new GameObject("TempCam");
+            temp.AddComponent<Animator>();
             temp.transform.localRotation = Quaternion.identity;
 
             clip.SampleAnimation(temp, timer);
