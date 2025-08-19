@@ -1,3 +1,4 @@
+using Steamworks;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
@@ -7,11 +8,11 @@ using System.Collections.Generic;
 
 public class MenuManager : MonoBehaviourPunCallbacks
 {
-    [SerializeField] private Dropdown roomDropdown;
     [SerializeField] private InputField nameField;
     [SerializeField] private Text notifBarCanvas;
+    [SerializeField] private Dropdown friendsDropdown;
 
-    private List<RoomInfo> roomList = new List<RoomInfo>();
+    private List<CSteamID> steamFriends = new List<CSteamID>();
 
     void Start()
     {
@@ -20,114 +21,159 @@ public class MenuManager : MonoBehaviourPunCallbacks
             PhotonNetwork.ConnectUsingSettings();
             NotifMsg("Connecting to Photon...");
         }
-        else if (!PhotonNetwork.InLobby)
+
+        if (SteamAPI.Init())
         {
-            PhotonNetwork.JoinLobby();
-            NotifMsg("Joining lobby...");
+            Debug.Log("SteamAPI initialized successfully.");
+            UpdateSteamFriends();
+        }
+        else
+        {
+            NotifMsg("SteamAPI initialization failed. Make sure Steam is running.");
         }
     }
 
     public override void OnConnectedToMaster()
     {
+        NotifMsg("Connected to Photon.");
         PhotonNetwork.JoinLobby();
-    }
-
-    public override void OnJoinedLobby()
-    {
-        UpdateRoomDropdown();
-    }
-
-    public override void OnRoomListUpdate(List<RoomInfo> roomList)
-    {
-        this.roomList = roomList;
-        UpdateRoomDropdown();
-    }
-
-    private void UpdateRoomDropdown()
-    {
-        roomDropdown.ClearOptions();
-        List<string> options = new List<string>();
-        options.Add("Create New Room");
-        foreach (RoomInfo room in roomList)
-        {
-            if (room.RemovedFromList) continue;
-            options.Add(room.Name);
-        }
-        roomDropdown.AddOptions(options);
     }
 
     public void CreateRoom()
     {
-        string nameText = nameField.text;
-        if (string.IsNullOrEmpty(nameText))
-            nameText = "Player";
+        string playerName = string.IsNullOrEmpty(nameField.text) ? "Player" : nameField.text;
+        PhotonNetwork.NickName = playerName;
 
-        if (!PhotonNetwork.IsConnected || !PhotonNetwork.InLobby)
-            return;
+        string roomName = "Room_" + Random.Range(1, 1000).ToString();
+        RoomOptions roomOptions = new RoomOptions { MaxPlayers = 4 };
+        PhotonNetwork.CreateRoom(roomName, roomOptions);
+        NotifMsg("Creating room: " + roomName);
 
-        PhotonNetwork.NickName = nameText;
+            if (SteamAPI.IsSteamRunning())
+            {
+                SteamMatchmaking.CreateLobby(ELobbyType.k_ELobbyTypeFriendsOnly, 4);
+            }
+    }
 
-        string selectedRoom = roomDropdown.options[roomDropdown.value].text;
-        if (selectedRoom == "Create New Room")
+    public override void OnCreatedRoom()
+    {
+        NotifMsg("Room created: " + PhotonNetwork.CurrentRoom.Name);
+
+        if (SteamAPI.IsSteamRunning() && PhotonNetwork.CurrentRoom != null)
         {
-            string roomName = "Room_" + Random.Range(1, 1000).ToString();
-            RoomOptions roomOptions = new RoomOptions();
-            roomOptions.MaxPlayers = 4;
-            PhotonNetwork.CreateRoom(roomName, roomOptions);
-            NotifMsg("Creating room: " + roomName);
-        }
-        else
-        {
-            PhotonNetwork.JoinRoom(selectedRoom);
-            NotifMsg("Joining room: " + selectedRoom);
+            CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(0);
+            if (lobbyID.IsValid())
+            {
+                SteamMatchmaking.SetLobbyData(lobbyID, "photonRoomName", PhotonNetwork.CurrentRoom.Name);
+            }
         }
     }
 
-    public void JoinSelectedRoom()
+    private void UpdateSteamFriends()
     {
-        string nameText = nameField.text;
-        if (string.IsNullOrEmpty(nameText))
-            nameText = "Player";
+        steamFriends.Clear();
+        friendsDropdown.ClearOptions();
 
-        if (!PhotonNetwork.IsConnected || !PhotonNetwork.InLobby)
+        int friendCount = SteamFriends.GetFriendCount(EFriendFlags.k_EFriendFlagImmediate);
+        List<string> options = new List<string>();
+
+        for (int i = 0; i < friendCount; i++)
         {
-            NotifMsg("Not connected to lobby. Please wait...");
+            CSteamID friendID = SteamFriends.GetFriendByIndex(i, EFriendFlags.k_EFriendFlagImmediate);
+
+            EPersonaState friendState = SteamFriends.GetFriendPersonaState(friendID);
+            if (friendState == EPersonaState.k_EPersonaStateOnline)
+            {
+                string friendName = SteamFriends.GetFriendPersonaName(friendID);
+                steamFriends.Add(friendID);
+                options.Add(friendName);
+            }
+        }
+
+        friendsDropdown.AddOptions(options);
+    }
+
+    public void InviteSelectedFriend()
+    {
+        int index = friendsDropdown.value;
+        if (index < 0 || index >= steamFriends.Count)
+            return;
+
+        CSteamID friendID = steamFriends[index];
+        SteamFriends.ActivateGameOverlayInviteDialog(friendID);
+        NotifMsg("Invite sent to " + SteamFriends.GetFriendPersonaName(friendID));
+    }
+
+    public void JoinFriendRoom()
+    {
+        int index = friendsDropdown.value;
+        if (index < 0 || index >= steamFriends.Count)
+        {
+            NotifMsg("No friend selected.");
             return;
         }
 
-        PhotonNetwork.NickName = nameText;
+        string playerName = string.IsNullOrEmpty(nameField.text) ? "Player" : nameField.text;
+        PhotonNetwork.NickName = playerName;
 
-        string selectedRoom = roomDropdown.options[roomDropdown.value].text;
-        if (selectedRoom != "Create New Room")
+        CSteamID friendID = steamFriends[index];
+        FriendGameInfo_t gameInfo;
+
+        if (SteamFriends.GetFriendGamePlayed(friendID, out gameInfo))
         {
-            PhotonNetwork.JoinRoom(selectedRoom);
-            NotifMsg("Joining room: " + selectedRoom);
+            if (gameInfo.m_gameID.AppID() == new AppId_t(480))
+            {
+                if (!gameInfo.m_steamIDLobby.IsValid())
+                {
+                    NotifMsg("Selected friend is not in a lobby.");
+                    return;
+                }
+
+                string lobbyName = SteamMatchmaking.GetLobbyData(gameInfo.m_steamIDLobby, "photonRoomName");
+                if (string.IsNullOrEmpty(lobbyName))
+                {
+                    NotifMsg("Could not find friend's room.");
+                    return;
+                }
+
+                NotifMsg($"Joining {lobbyName}...");
+                PhotonNetwork.JoinRoom(lobbyName);
+            }
+            else
+            {
+                NotifMsg("Selected friend is not playing this game.");
+            }
         }
         else
         {
-            NotifMsg("Please select a room or create a new one!");
+            NotifMsg("Selected friend is not in a game.");
         }
     }
 
     public override void OnJoinedRoom()
     {
+        NotifMsg("Joined room. Loading lobby...");
         PhotonNetwork.LoadLevel("Lobby");
     }
 
-    public void Quit()
+    public override void OnJoinRoomFailed(short returnCode, string message)
     {
-        Application.Quit();
+        NotifMsg($"Failed to join room: {message}");
     }
 
     private void NotifMsg(string msg)
     {
-        notifBarCanvas.text = msg;
-        StartCoroutine(nameof(ClearNotifBar));
+        if (notifBarCanvas != null)
+        {
+            notifBarCanvas.text = msg;
+            StartCoroutine(ClearNotifBar());
+        }
     }
 
-    IEnumerator ClearNotifBar()
+    private IEnumerator ClearNotifBar()
     {
         yield return new WaitForSeconds(3);
-        notifBarCanvas.text = "";
+        if (notifBarCanvas != null)
+            notifBarCanvas.text = "";
     }
 }

@@ -662,7 +662,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Create room
+  m_Text: Create lobby
 --- !u!222 &604947259
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1582,7 +1582,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: Join room
+  m_Text: Join to player
 --- !u!222 &1519411738
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -2914,7 +2914,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 2063459093}
         m_TargetAssemblyTypeName: MenuManager, Assembly-CSharp
-        m_MethodName: JoinSelectedRoom
+        m_MethodName: JoinFriendRoom
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -2991,11 +2991,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5ca3697044a2955488473fb3b8b29169, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomDropdown: {fileID: 1667249014}
   nameField: {fileID: 1999494663}
   notifBarCanvas: {fileID: 1639103296}
-  createRoomButton: {fileID: 1998096359}
-  joinRoomButton: {fileID: 2032225445}
+  friendsDropdown: {fileID: 1667249014}
 --- !u!4 &2063459094
 Transform:
   m_ObjectHideFlags: 0
