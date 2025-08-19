@@ -14,22 +14,27 @@ public class MenuManager : MonoBehaviourPunCallbacks
 
     private List<CSteamID> steamFriends = new List<CSteamID>();
 
+    private Callback<LobbyCreated_t> lobbyCreated;
+    private Callback<LobbyEnter_t> lobbyEnter;
+
+    private CSteamID currentLobbyID;
+
     void Start()
     {
-        if (!PhotonNetwork.IsConnected)
-        {
-            PhotonNetwork.ConnectUsingSettings();
-            NotifMsg("Connecting to Photon...");
-        }
-
         if (SteamAPI.Init())
         {
             Debug.Log("SteamAPI initialized successfully.");
-            UpdateSteamFriends();
+            lobbyCreated = Callback<LobbyCreated_t>.Create(OnLobbyCreated);
+            lobbyEnter = Callback<LobbyEnter_t>.Create(OnLobbyEnter);
         }
         else
         {
             NotifMsg("SteamAPI initialization failed. Make sure Steam is running.");
+        }
+
+        if (SteamAPI.IsSteamRunning())
+        {
+            UpdateSteamFriends();
         }
     }
 
@@ -59,13 +64,40 @@ public class MenuManager : MonoBehaviourPunCallbacks
     {
         NotifMsg("Room created: " + PhotonNetwork.CurrentRoom.Name);
 
-        if (SteamAPI.IsSteamRunning() && PhotonNetwork.CurrentRoom != null)
+        if (SteamAPI.IsSteamRunning() && currentLobbyID.IsValid())
         {
-            CSteamID lobbyID = SteamMatchmaking.GetLobbyByIndex(0);
-            if (lobbyID.IsValid())
-            {
-                SteamMatchmaking.SetLobbyData(lobbyID, "photonRoomName", PhotonNetwork.CurrentRoom.Name);
-            }
+            SteamMatchmaking.SetLobbyData(currentLobbyID, "photonRoomName", PhotonNetwork.CurrentRoom.Name);
+            Debug.Log("Set photonRoomName in Steam lobby: " + PhotonNetwork.CurrentRoom.Name);
+        }
+    }
+
+    private void OnLobbyCreated(LobbyCreated_t callback)
+    {
+        if (callback.m_eResult == EResult.k_EResultOK)
+        {
+            currentLobbyID = new CSteamID(callback.m_ulSteamIDLobby);
+            Debug.Log("Steam lobby created with ID: " + currentLobbyID);
+        }
+        else
+        {
+            Debug.LogError("Failed to create Steam lobby: " + callback.m_eResult);
+        }
+    }
+
+    private void OnLobbyEnter(LobbyEnter_t callback)
+    {
+        CSteamID lobbyID = new CSteamID(callback.m_ulSteamIDLobby);
+        Debug.Log("Entered Steam lobby: " + lobbyID);
+
+        string photonRoom = SteamMatchmaking.GetLobbyData(lobbyID, "photonRoomName");
+        if (!string.IsNullOrEmpty(photonRoom))
+        {
+            NotifMsg("Joining Photon room: " + photonRoom);
+            PhotonNetwork.JoinRoom(photonRoom);
+        }
+        else
+        {
+            NotifMsg("Lobby has no Photon room data.");
         }
     }
 
@@ -113,15 +145,12 @@ public class MenuManager : MonoBehaviourPunCallbacks
             return;
         }
 
-        string playerName = string.IsNullOrEmpty(nameField.text) ? "Player" : nameField.text;
-        PhotonNetwork.NickName = playerName;
-
         CSteamID friendID = steamFriends[index];
         FriendGameInfo_t gameInfo;
 
         if (SteamFriends.GetFriendGamePlayed(friendID, out gameInfo))
         {
-            if (gameInfo.m_gameID.AppID() == new AppId_t(480))
+            if (gameInfo.m_gameID.AppID() == SteamUtils.GetAppID())
             {
                 if (!gameInfo.m_steamIDLobby.IsValid())
                 {
@@ -129,15 +158,7 @@ public class MenuManager : MonoBehaviourPunCallbacks
                     return;
                 }
 
-                string lobbyName = SteamMatchmaking.GetLobbyData(gameInfo.m_steamIDLobby, "photonRoomName");
-                if (string.IsNullOrEmpty(lobbyName))
-                {
-                    NotifMsg("Could not find friend's room.");
-                    return;
-                }
-
-                NotifMsg($"Joining {lobbyName}...");
-                PhotonNetwork.JoinRoom(lobbyName);
+                SteamMatchmaking.JoinLobby(gameInfo.m_steamIDLobby);
             }
             else
             {
