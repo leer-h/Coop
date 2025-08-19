@@ -1336,7 +1336,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   nameText: {fileID: 4104635009191365699}
-  offset: {x: 0, y: 2, z: 0}
+  offset: {x: 0, y: 1.5, z: 0}
 --- !u!114 &7518751576261797468
 MonoBehaviour:
   m_ObjectHideFlags: 0

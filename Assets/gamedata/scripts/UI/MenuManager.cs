@@ -13,10 +13,8 @@ public class MenuManager : MonoBehaviourPunCallbacks
     [SerializeField] private Dropdown friendsDropdown;
 
     private List<CSteamID> steamFriends = new List<CSteamID>();
-
     private Callback<LobbyCreated_t> lobbyCreated;
     private Callback<LobbyEnter_t> lobbyEnter;
-
     private CSteamID currentLobbyID;
 
     void Start()
@@ -40,19 +38,32 @@ public class MenuManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        string steamName = SteamAPI.IsSteamRunning() ? SteamFriends.GetPersonaName() : "Player";
-        PhotonNetwork.NickName = steamName;
-
+        SetPlayerNickname();
         NotifMsg("Connected to Photon as " + PhotonNetwork.NickName);
         PhotonNetwork.JoinLobby();
     }
 
+    private void SetPlayerNickname()
+    {
+        string steamName = "Player";
+        if (SteamAPI.IsSteamRunning() && SteamAPI.Init())
+        {
+            steamName = SteamFriends.GetPersonaName();
+            if (string.IsNullOrEmpty(steamName))
+            {
+                steamName = "Player_" + Random.Range(1000, 9999); 
+            }
+        }
+        else
+        {
+            steamName = "Player_" + Random.Range(1000, 9999);
+        }
+        PhotonNetwork.NickName = steamName;
+        Debug.Log($"Nickname set for local player: {PhotonNetwork.NickName}");
+    }
+
     public void CreateRoom()
     {
-        string steamName = SteamAPI.IsSteamRunning() ? SteamFriends.GetPersonaName() : "";
-
-        PhotonNetwork.NickName = steamName;
-
         string roomName = "Room_" + Random.Range(1, 1000).ToString();
         RoomOptions roomOptions = new RoomOptions { MaxPlayers = 4 };
         PhotonNetwork.CreateRoom(roomName, roomOptions);
@@ -74,6 +85,21 @@ public class MenuManager : MonoBehaviourPunCallbacks
             SteamMatchmaking.SetLobbyData(currentLobbyID, "photonRoomName", PhotonNetwork.CurrentRoom.Name);
             Debug.Log("Set photonRoomName in Steam lobby: " + PhotonNetwork.CurrentRoom.Name);
         }
+    }
+
+    public override void OnJoinedRoom()
+    {
+        if (string.IsNullOrEmpty(PhotonNetwork.NickName))
+        {
+            SetPlayerNickname();
+        }
+        NotifMsg("Joined room. Loading lobby...");
+        PhotonNetwork.LoadLevel("Lobby");
+    }
+
+    public override void OnJoinRoomFailed(short returnCode, string message)
+    {
+        NotifMsg($"Failed to join room: {message}");
     }
 
     private void OnLobbyCreated(LobbyCreated_t callback)
@@ -174,17 +200,6 @@ public class MenuManager : MonoBehaviourPunCallbacks
         {
             NotifMsg("Selected friend is not in a game.");
         }
-    }
-
-    public override void OnJoinedRoom()
-    {
-        NotifMsg("Joined room. Loading lobby...");
-        PhotonNetwork.LoadLevel("Lobby");
-    }
-
-    public override void OnJoinRoomFailed(short returnCode, string message)
-    {
-        NotifMsg($"Failed to join room: {message}");
     }
 
     private void NotifMsg(string msg)
