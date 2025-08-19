@@ -40,18 +40,23 @@ public class MenuManager : MonoBehaviourPunCallbacks
 
     public override void OnConnectedToMaster()
     {
-        NotifMsg("Connected to Photon.");
+        string steamName = SteamAPI.IsSteamRunning() ? SteamFriends.GetPersonaName() : "Player";
+        PhotonNetwork.NickName = steamName;
+
+        NotifMsg("Connected to Photon as " + PhotonNetwork.NickName);
         PhotonNetwork.JoinLobby();
     }
 
     public void CreateRoom()
     {
-        string playerName = string.IsNullOrEmpty(nameField.text) ? "Player" : nameField.text;
-        PhotonNetwork.NickName = playerName;
+        string steamName = SteamAPI.IsSteamRunning() ? SteamFriends.GetPersonaName() : "";
+
+        PhotonNetwork.NickName = steamName;
 
         string roomName = "Room_" + Random.Range(1, 1000).ToString();
         RoomOptions roomOptions = new RoomOptions { MaxPlayers = 4 };
         PhotonNetwork.CreateRoom(roomName, roomOptions);
+
         NotifMsg("Creating room: " + roomName);
 
         if (SteamAPI.IsSteamRunning())
