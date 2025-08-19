@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class CameraEffectsEvents : MonoBehaviour
 {
+    [SerializeField] private CameraEffects cameraEffects;
+    
     private void OnEnable()
     {
         CharacterMovement.OnJumpEvent += HandleJump;
@@ -20,24 +22,24 @@ public class CameraEffectsEvents : MonoBehaviour
 
     private void HandleJump()
     {
-        CameraEffects.AddCamEffector("cam_jump", 3f);
+        cameraEffects.AddCamEffector("cam_jump", 3f);
     }
 
     private void HandleLand()
     {
-        CameraEffects.AddCamEffector("cam_land", 3f, 2f);
+        cameraEffects.AddCamEffector("cam_land", 3f, 2f);
     }
 
     private void HandleCrouch(bool isCrouching)
     {
         if (isCrouching)
-            CameraEffects.AddCamEffector("cam_crouch", 3f);
+            cameraEffects.AddCamEffector("cam_crouch", 3f);
         else
-            CameraEffects.AddCamEffector("cam_stand", 3f);
+            cameraEffects.AddCamEffector("cam_stand", 3f);
     }
 
     private void HandleMove(Vector2 moveInput)
     {
-        CameraEffects.AddCamEffector("cam_move", 15f);
+        cameraEffects.AddCamEffector("cam_move", 15f);
     }
 }

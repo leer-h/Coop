@@ -3,19 +3,13 @@ using System.Collections;
 
 public class CameraEffects : MonoBehaviour
 {
-    private static CameraEffects instance;
     private Quaternion baseRotation;
-
     private Quaternion currentAnimRotation = Quaternion.identity;
     private Coroutine animCoroutine;
 
     private void Awake()
     {
-        if (instance == null)
-        {
-            instance = this;
-            baseRotation = transform.localRotation;
-        }
+        baseRotation = transform.localRotation;
     }
 
     private void Update()
@@ -24,22 +18,15 @@ public class CameraEffects : MonoBehaviour
         transform.localRotation = baseRotation * currentAnimRotation;
     }
 
-    public static void AddCamEffector(string effectName, float animationMultiplier = 1f, float speed = 1f)
+    public void AddCamEffector(string effectName, float animationMultiplier = 1f, float speed = 1f)
     {
-        if (instance != null)
-        {
-            AnimationClip clip = instance.LoadClip(effectName);
-            if (clip == null) return;
+        AnimationClip clip = LoadClip(effectName);
+        if (clip == null) return;
 
-            if (instance.animCoroutine != null)
-                instance.StopCoroutine(instance.animCoroutine);
+        if (animCoroutine != null)
+            StopCoroutine(animCoroutine);
 
-            instance.animCoroutine = instance.StartCoroutine(instance.PlayClipAdditive(clip, animationMultiplier, speed));
-        }
-        else
-        {
-            Debug.LogError("CameraEffects instance not found!");
-        }
+        animCoroutine = StartCoroutine(PlayClipAdditive(clip, animationMultiplier, speed));
     }
 
     private AnimationClip LoadClip(string effectName)
