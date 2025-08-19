@@ -344,6 +344,7 @@ GameObject:
   - component: {fileID: 4969565072033818767}
   - component: {fileID: 6257809037514526067}
   - component: {fileID: 7982790737571142503}
+  - component: {fileID: 8637248170275602180}
   - component: {fileID: 169681650134430306}
   - component: {fileID: 2680643069288568987}
   - component: {fileID: 4054074037061393420}
@@ -352,6 +353,8 @@ GameObject:
   - component: {fileID: 7786548767966808742}
   - component: {fileID: 2264367508366736719}
   - component: {fileID: 5366471102403848140}
+  - component: {fileID: 7581449793376326129}
+  - component: {fileID: 4548325627402490163}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -435,6 +438,28 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4103073132186862774}
   m_Enabled: 1
+--- !u!95 &8637248170275602180
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4103073132186862774}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!114 &169681650134430306
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -564,7 +589,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4103073132186862774}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: d47c0a9cdbadb7449b593a9a1933c4a9, type: 3}
   m_Name: 
@@ -592,6 +617,30 @@ MonoBehaviour:
   blendDistance: 0
   weight: 1
   sharedProfile: {fileID: 11400000, guid: 2af98932cc2c5fc4dab00b4eec458d4e, type: 2}
+--- !u!114 &7581449793376326129
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4103073132186862774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 87164d1bffa37df47846ea62faa3e398, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &4548325627402490163
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4103073132186862774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 67dccbeaf12963a4780c747c0feb9de9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &4174028360121711323
 GameObject:
   m_ObjectHideFlags: 0
@@ -1083,11 +1132,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   walkSpeed: 5
+  moveEventInterval: 0.5
   jumpHeight: 2
   gravity: -30
   crouchHeight: 1
   standHeight: 2
-  crouchSpeed: 2.5
+  crouchSpeed: 2
+  transitionSpeed: 5
   playerCamera: {fileID: 4969565072033818767}
 --- !u!114 &6475909243009296333
 MonoBehaviour:

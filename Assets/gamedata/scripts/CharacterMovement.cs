@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Photon.Pun;
+using System;
 
 [RequireComponent(typeof(CharacterController))]
 [RequireComponent(typeof(PhotonView))]
@@ -8,26 +9,37 @@ using Photon.Pun;
 public class CharacterMovement : MonoBehaviourPun
 {
     [Header("Movement")]
-    public float walkSpeed = 5f;
-    public float jumpHeight = 2f;
-    public float gravity = -9.81f;
-    public float crouchHeight = 1f;
-    public float standHeight = 2f;
-    public float crouchSpeed = 2.5f;
+    [SerializeField] private float walkSpeed = 5f;
+    [SerializeField] private float moveEventInterval = 0.5f;
+    [SerializeField] private float jumpHeight = 2f;
+    [SerializeField] private float gravity = -9.81f;
+    [SerializeField] private float crouchHeight = 1f;
+    [SerializeField] private float standHeight = 2f;
+    [SerializeField] private float crouchSpeed = 2.5f;
+    [SerializeField] private float transitionSpeed = 5f;
 
     [Header("Mouse Look")]
-    public Transform playerCamera;
+    [SerializeField] private Transform playerCamera;
     private float xRotation = 0f;
+    private float targetCameraHeight;
+    private float currentCameraHeight;
 
+    private float moveEventTimer = 0f;
     private CharacterController controller;
     private Vector3 velocity;
     private bool isGrounded;
     private bool isCrouching;
+    private bool wasGrounded;
 
     private Vector2 moveInput;
     private Vector2 lookInput;
     private bool jumpPressed;
     private bool crouchPressed;
+
+    public static event Action OnJumpEvent;
+    public static event Action OnLandEvent;
+    public static event Action<Vector2> OnMovingEvent;
+    public static event Action<bool> OnCrouchEvent;
 
     private void Start()
     {
@@ -42,6 +54,10 @@ public class CharacterMovement : MonoBehaviourPun
 
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+
+        currentCameraHeight = standHeight * 0.6f;
+        targetCameraHeight = currentCameraHeight;
+        UpdateCameraPosition();
     }
 
     private void Update()
@@ -49,6 +65,13 @@ public class CharacterMovement : MonoBehaviourPun
         if (!photonView.IsMine) return;
 
         isGrounded = controller.isGrounded;
+
+        if (!wasGrounded && isGrounded)
+        {
+            OnLand();
+        }
+        wasGrounded = isGrounded;
+
         if (isGrounded && velocity.y < 0)
             velocity.y = -2f;
 
@@ -57,6 +80,8 @@ public class CharacterMovement : MonoBehaviourPun
         HandleJump();
         HandleCrouch();
 
+        currentCameraHeight = Mathf.Lerp(currentCameraHeight, targetCameraHeight, Time.deltaTime * transitionSpeed);
+        UpdateCameraPosition();
 
         velocity.y += gravity * Time.deltaTime;
         controller.Move(velocity * Time.deltaTime);
@@ -87,6 +112,8 @@ public class CharacterMovement : MonoBehaviourPun
     }
     #endregion
 
+
+
     private void HandleMouseLook()
     {
         float mouseX = lookInput.x;
@@ -99,13 +126,26 @@ public class CharacterMovement : MonoBehaviourPun
         transform.Rotate(Vector3.up * mouseX);
     }
 
-
     private void HandleMovement()
     {
         Vector3 move = transform.right * moveInput.x + transform.forward * moveInput.y;
         float speed = isCrouching ? crouchSpeed : walkSpeed;
 
-        controller.Move(move * speed * Time.deltaTime);
+        controller.Move(speed * Time.deltaTime * move);
+
+        if (moveInput.sqrMagnitude > 0f)
+        {
+            moveEventTimer += Time.deltaTime;
+            if (moveEventTimer >= moveEventInterval)
+            {
+                OnMovingEvent?.Invoke(moveInput);
+                moveEventTimer = 0f;
+            }
+        }
+        else
+        {
+            moveEventTimer = moveEventInterval;
+        }
     }
 
     private void HandleJump()
@@ -113,6 +153,8 @@ public class CharacterMovement : MonoBehaviourPun
         if (jumpPressed && isGrounded && !isCrouching)
         {
             velocity.y = Mathf.Sqrt(jumpHeight * -2f * gravity);
+
+            OnJumpEvent?.Invoke();
         }
         jumpPressed = false;
     }
@@ -121,14 +163,32 @@ public class CharacterMovement : MonoBehaviourPun
     {
         if (crouchPressed)
         {
+            if (!isCrouching)
+                OnCrouchEvent?.Invoke(true);
+
             isCrouching = true;
-            controller.height = crouchHeight;
+            targetCameraHeight = crouchHeight * 0.6f;
         }
         else
         {
+            if (isCrouching)
+                OnCrouchEvent?.Invoke(false);
+
             isCrouching = false;
-            controller.height = standHeight;
+            targetCameraHeight = standHeight * 0.6f;
         }
+    }
+
+    private void UpdateCameraPosition()
+    {
+        Vector3 cameraPos = playerCamera.localPosition;
+        cameraPos.y = currentCameraHeight;
+        playerCamera.localPosition = cameraPos;
+    }
+
+    private void OnLand()
+    {
+        OnLandEvent?.Invoke();
     }
 
     public bool IsGrounded()
