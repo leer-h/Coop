@@ -94,7 +94,7 @@ public class MenuManager : MonoBehaviourPunCallbacks
             SetPlayerNickname();
         }
         NotifMsg("Joined room. Loading lobby...");
-        PhotonNetwork.LoadLevel("Lobby");
+        SceneTransitionManager.instance.LoadPhotonSceneWithFade("Lobby");
     }
 
     public override void OnJoinRoomFailed(short returnCode, string message)

@@ -33,6 +33,6 @@ public class ConnectToServer : MonoBehaviourPunCallbacks
     {
         yield return new WaitForSeconds(3f);
 
-        SceneManager.LoadScene("MainMenu");
+        SceneTransitionManager.instance.LoadSceneWithFade("MainMenu");
     }
 }
