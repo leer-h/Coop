@@ -1,5 +1,8 @@
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 using System.Collections;
+using System.Collections.Generic;
 
 public class CameraEffects : MonoBehaviour
 {
@@ -7,9 +10,29 @@ public class CameraEffects : MonoBehaviour
     private Quaternion currentAnimRotation = Quaternion.identity;
     private Coroutine animCoroutine;
 
+    private Dictionary<string, AnimationClip> clipCache = new Dictionary<string, AnimationClip>();
+
+    private GameObject tempCam;
+
     private void Awake()
     {
         baseRotation = transform.localRotation;
+
+        tempCam = new GameObject("TempCam");
+        tempCam.AddComponent<Animator>();
+        tempCam.transform.localRotation = Quaternion.identity;
+        tempCam.hideFlags = HideFlags.HideAndDontSave;
+    }
+
+    private void OnDestroy()
+    {
+        if (tempCam != null)
+            Destroy(tempCam);
+    }
+
+    private void OnDisable()
+    {
+        ClearCache();
     }
 
     private void Update()
@@ -20,24 +43,41 @@ public class CameraEffects : MonoBehaviour
 
     public void AddCamEffector(string effectName, float animationMultiplier = 1f, float speed = 1f)
     {
-        AnimationClip clip = LoadClip(effectName);
-        if (clip == null) return;
+        if (clipCache.TryGetValue(effectName, out var cachedClip))
+        {
+            PlayCachedClip(cachedClip, animationMultiplier, speed);
+            return;
+        }
 
+        LoadClip(effectName, (clip) =>
+        {
+            if (clip == null) return;
+
+            clipCache[effectName] = clip;
+            PlayCachedClip(clip, animationMultiplier, speed);
+        });
+    }
+
+    private void PlayCachedClip(AnimationClip clip, float animationMultiplier, float speed)
+    {
         if (animCoroutine != null)
             StopCoroutine(animCoroutine);
 
         animCoroutine = StartCoroutine(PlayClipAdditive(clip, animationMultiplier, speed));
     }
 
-    private AnimationClip LoadClip(string effectName)
+    private void LoadClip(string effectName, System.Action<AnimationClip> onLoaded)
     {
-        string path = $"cam_anims/{effectName}";
-        AnimationClip clip = Resources.Load<AnimationClip>(path);
-        if (clip == null)
+        Addressables.LoadAssetAsync<AnimationClip>(effectName).Completed += (AsyncOperationHandle<AnimationClip> handle) =>
         {
-            Debug.LogError($"CameraEffects: can't find anim in {path}");
-        }
-        return clip;
+            if (handle.Status == AsyncOperationStatus.Succeeded)
+                onLoaded?.Invoke(handle.Result);
+            else
+            {
+                Debug.LogError($"CameraEffects: can't load anim {effectName}");
+                onLoaded?.Invoke(null);
+            }
+        };
     }
 
     private IEnumerator PlayClipAdditive(AnimationClip clip, float animationMultiplier, float speed)
@@ -47,13 +87,9 @@ public class CameraEffects : MonoBehaviour
 
         while (timer < clip.length)
         {
-            GameObject temp = new GameObject("TempCam");
-            temp.AddComponent<Animator>();
-            temp.transform.localRotation = Quaternion.identity;
+            clip.SampleAnimation(tempCam, timer);
 
-            clip.SampleAnimation(temp, timer);
-
-            Quaternion targetRotation = temp.transform.localRotation;
+            Quaternion targetRotation = tempCam.transform.localRotation;
             targetRotation.x *= -1;
 
             Vector3 eulerAngles = targetRotation.eulerAngles;
@@ -62,8 +98,6 @@ public class CameraEffects : MonoBehaviour
 
             float t = Mathf.Clamp01(Time.deltaTime / fadeDuration);
             currentAnimRotation = Quaternion.Slerp(currentAnimRotation, targetRotation, t);
-
-            Destroy(temp);
 
             timer += Time.deltaTime * speed;
             yield return null;
@@ -79,5 +113,12 @@ public class CameraEffects : MonoBehaviour
 
         currentAnimRotation = Quaternion.identity;
         animCoroutine = null;
+    }
+
+    private void ClearCache()
+    {
+        foreach (var clip in clipCache.Values)
+            Addressables.Release(clip);
+        clipCache.Clear();
     }
 }

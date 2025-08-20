@@ -1,42 +1,24 @@
-using UnityEngine;
 using System.Collections;
+using UnityEngine;
 using UnityEngine.UI;
 
 public class HudMsg : MonoBehaviour
 {
-    public static HudMsg Instance { get; private set; }
-
     [SerializeField] private Text _txt;
 
-    private void Awake()
+    public void SetHudMsg(string str, Vector3 pos, int size, bool useAnm, float secondToRemove)
     {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this);
-            return;
-        }
-        Instance = this;
-    }
-
-    public static void SetHudMsg(string str, Vector3 pos, int size, bool useAnm, float secondToRemove)
-    {
-        if (Instance == null)
-        {
-            Debug.LogWarning("HudMsg: Instance is null!");
-            return;
-        }
-
-        var _txt = Instance._txt;
+        if (_txt == null) return;
 
         if (useAnm)
         {
             _txt.color = new Color(1, 1, 1, 0);
-            Instance.StartCoroutine(Instance.LerpAnm(secondToRemove));
+            StartCoroutine(LerpAnm(secondToRemove));
         }
         else
         {
             _txt.color = new Color(1, 1, 1, 1);
-            Instance.Invoke(nameof(TextRemove), secondToRemove);
+            Invoke(nameof(TextRemove), secondToRemove);
         }
 
         _txt.transform.localPosition = pos;
@@ -47,20 +29,19 @@ public class HudMsg : MonoBehaviour
     private IEnumerator LerpAnm(float secondToRemove)
     {
         Color targetColor = _txt.color;
-        int targetAlphaVal = 1;
+        float targetAlpha = 1f;
         for (int i = 0; i < 2; i++)
         {
-            while (_txt.color.a != targetAlphaVal)
+            while (!Mathf.Approximately(_txt.color.a, targetAlpha))
             {
-                var c = Mathf.MoveTowards(_txt.color.a, targetAlphaVal, 5f * Time.deltaTime);
-                targetColor.a = c;
+                targetColor.a = Mathf.MoveTowards(_txt.color.a, targetAlpha, 5f * Time.deltaTime);
                 _txt.color = targetColor;
                 yield return null;
             }
-            targetAlphaVal = 0;
+            targetAlpha = 0f;
             yield return new WaitForSeconds(secondToRemove);
         }
-        Invoke(nameof(TextRemove), 2);
+        TextRemove();
     }
 
     private void TextRemove()
