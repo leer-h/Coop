@@ -2398,7 +2398,7 @@ ParticleSystem:
     startSpeed:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 5
+      scalar: 1
       minScalar: 5
       maxCurve:
         serializedVersion: 2
@@ -2980,7 +2980,7 @@ ParticleSystem:
     sphericalDirectionAmount: 0
     randomPositionAmount: 0
     radius:
-      value: 1
+      value: 5
       mode: 0
       spread: 0
       speed:
@@ -7051,7 +7051,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 11
   m_Type: 0
-  m_Color: {r: 0.2488643, g: 0.58355856, b: 0.7207546, a: 1}
+  m_Color: {r: 0.5726806, g: 0.8173901, b: 0.9169811, a: 1}
   m_Intensity: 76.26
   m_Range: 10
   m_SpotAngle: 142.1446
