@@ -1,0 +1,13 @@
+{
+    "asset": "35065355ead38f74dbd4fb515824349d",
+    "fileName": "0198d044-a277-7c8d-bf2a-3e0e4af12f60.wav",
+    "prompt": "metal tool switch",
+    "negativePrompt": "",
+    "model": "0ee39b33-2893-4e0f-8c46-0e0bdd4eda85",
+    "modelName": "Text to Sound",
+    "customSeed": -1,
+    "w3CTraceId": "370fee7bc38d97ff4fa14fbe321b1715",
+    "duration": 1.0,
+    "autoTrim": true,
+    "hasReference": false
+}
