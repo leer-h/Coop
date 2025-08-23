@@ -7,23 +7,37 @@ public class WorldToHudUI : MonoBehaviour
 {
     [SerializeField] private WorldUICheck worldUICheck;
     [SerializeField] private Camera playerCamera;
+
+    [Header("Raycast Settings")]
     [SerializeField] private float rayDistance = 100f;
-    [SerializeField] private float duration = 0.3f;
     [SerializeField] private float focusDistance = 2f;
+
+    [Header("PopUp Animation Settings")]
+    [SerializeField] private float duration = 0.3f;
     [SerializeField] private float popUpScale = 1.2f;
     [SerializeField] private float popUpDuration = 0.2f;
 
+    [Header("Punch Animation Settings")]
+    [SerializeField] private Vector3 punchStrength = new (0.5f, 0.5f, 0f);
+    [SerializeField] private float punchDuration = 0.5f;
+    [SerializeField] private int vibrato = 10;
+    [SerializeField] private float elasticity = 1f;
+
     private Transform currentTarget;
-    private Dictionary<Transform, UIOriginalData> originalData = new Dictionary<Transform, UIOriginalData>();
+    private readonly Dictionary<Transform, UIOriginalData> originalData = new();
     private bool isFocusing;
 
-    // Збережемо Tween для скейлу
     private Tween scaleTween;
+    private Tween punchTween;
+    private Vector3 punchOriginalScale;
+    private Transform punchLastTarget;
 
     void Update()
     {
         if (playerCamera == null)
             playerCamera = Camera.main;
+
+        CheckForPunch();
 
         if (!isFocusing)
         {
@@ -31,6 +45,48 @@ public class WorldToHudUI : MonoBehaviour
             return;
         }
 
+        HandleFocusUI();
+    }
+
+    private void CheckForPunch()
+    {
+        RectTransform rectTransform = worldUICheck.GetUIElement<RectTransform>(rayDistance);
+        if (rectTransform != null)
+            HandlePunchScaleAnimation(rectTransform.transform);
+        else
+            ResetPunchLastTarget();
+    }
+
+    private void HandlePunchScaleAnimation(Transform target)
+    {
+        if (target == punchLastTarget) return;
+
+        if (punchTween != null && punchTween.IsActive())
+        {
+            punchTween.Kill();
+            if (punchLastTarget != null)
+                punchLastTarget.localScale = punchOriginalScale;
+        }
+
+        punchLastTarget = target;
+        punchOriginalScale = target.localScale;
+
+        punchTween = target.DOPunchScale(punchStrength, punchDuration, vibrato, elasticity);
+    }
+
+    private void ResetPunchLastTarget()
+    {
+        if (punchTween != null && punchTween.IsActive())
+        {
+            punchTween.Kill();
+            if (punchLastTarget != null)
+                punchLastTarget.localScale = punchOriginalScale;
+        }
+        punchLastTarget = null;
+    }
+
+    private void HandleFocusUI()
+    {
         RectTransform rectTransform = worldUICheck.GetUIElement<RectTransform>(rayDistance);
 
         if (rectTransform != null && rectTransform.CompareTag("WorldToHud"))
@@ -44,11 +100,12 @@ public class WorldToHudUI : MonoBehaviour
 
                 if (!originalData.ContainsKey(target))
                 {
+                    Vector3 originalScaleToStore = (target == punchLastTarget) ? punchOriginalScale : target.localScale;
                     originalData[target] = new UIOriginalData(
                         target.position,
                         target.rotation,
                         target.GetSiblingIndex(),
-                        target.localScale
+                        originalScaleToStore
                     );
                 }
 
@@ -87,10 +144,6 @@ public class WorldToHudUI : MonoBehaviour
 
         if (currentTarget != null)
         {
-            Canvas parentCanvas = currentTarget.GetComponentInParent<Canvas>();
-            if (parentCanvas != null)
-                parentCanvas.gameObject.layer = LayerMask.NameToLayer("UI");
-
             ResetTarget(currentTarget, true);
             currentTarget = null;
         }
@@ -127,10 +180,8 @@ public class WorldToHudUI : MonoBehaviour
         }
     }
 
-    #region Input Callback
     public void OnFocusUI(InputAction.CallbackContext context)
     {
         isFocusing = context.ReadValue<float>() > 0f;
     }
-    #endregion
 }

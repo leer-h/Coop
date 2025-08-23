@@ -463,7 +463,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4921428693231105975
 Transform:
   m_ObjectHideFlags: 0
@@ -680,6 +680,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 67c940f8c03aa97408c43610820af04d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  crosshairType: 0
   radius: 10
   color: {r: 1, g: 1, b: 1, a: 1}
   thickness: 2
@@ -709,10 +710,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3670dff5776f84a44887c77dac03d5ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  punchStrength: {x: 0.5, y: 0.5, z: 0}
-  punchDuration: 0.5
-  vibrato: 10
-  elasticity: 0
 --- !u!114 &2286984231700013270
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -728,10 +725,14 @@ MonoBehaviour:
   worldUICheck: {fileID: 1141443465377602268}
   playerCamera: {fileID: 6257809037514526067}
   rayDistance: 100
-  duration: 0.3
   focusDistance: 3
+  duration: 0.3
   popUpScale: 1.2
   popUpDuration: 0.2
+  punchStrength: {x: 0.5, y: 0.5, z: 0}
+  punchDuration: 0.5
+  vibrato: 10
+  elasticity: 0
 --- !u!114 &7786548767966808742
 MonoBehaviour:
   m_ObjectHideFlags: 0

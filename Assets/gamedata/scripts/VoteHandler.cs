@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using Photon.Pun;
 
@@ -39,10 +40,11 @@ public class VoteHandler : MonoBehaviourPun
 
             if (PlayerVotes.Count >= PhotonNetwork.CurrentRoom.PlayerCount)
             {
-                photonView.RPC(nameof(RpcAllVoted), RpcTarget.All);
+                StartCoroutine(DelayedAllVoted());
             }
         }
     }
+
 
     [PunRPC]
     private void RpcUpdateVotes(int[] serializedVoteCounts)
@@ -67,6 +69,11 @@ public class VoteHandler : MonoBehaviourPun
         return dict;
     }
 
+    private IEnumerator DelayedAllVoted()
+    {
+        yield return new UnityEngine.WaitForSeconds(2f);
+        photonView.RPC(nameof(RpcAllVoted), RpcTarget.All);
+    }
 
     [PunRPC]
     private void RpcAllVoted()
