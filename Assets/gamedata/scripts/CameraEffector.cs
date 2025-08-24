@@ -10,7 +10,7 @@ public class CameraEffects : MonoBehaviour
     private Quaternion currentAnimRotation = Quaternion.identity;
     private Coroutine animCoroutine;
 
-    private Dictionary<string, AnimationClip> clipCache = new Dictionary<string, AnimationClip>();
+    private readonly Dictionary<string, AnimationClip> clipCache = new();
 
     private GameObject tempCam;
 
@@ -21,7 +21,7 @@ public class CameraEffects : MonoBehaviour
         tempCam = new GameObject("TempCam");
         tempCam.AddComponent<Animator>();
         tempCam.transform.localRotation = Quaternion.identity;
-        tempCam.hideFlags = HideFlags.HideAndDontSave;
+        //tempCam.hideFlags = HideFlags.HideAndDontSave;
     }
 
     private void OnDestroy()

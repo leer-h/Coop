@@ -51,6 +51,11 @@ public class VoteHandler : MonoBehaviourPun
     {
         var voteCounts = DeserializeVoteCounts(serializedVoteCounts);
         OnVotesUpdated?.Invoke(voteCounts);
+
+        string result = "Voting results: ";
+        foreach (var kvp in voteCounts)
+            result += $"Option {kvp.Key}: {kvp.Value} votes; ";
+        UnityEngine.Debug.Log(result);
     }
 
     private int[] SerializeVoteCounts(Dictionary<int, int> votes)
