@@ -21,7 +21,7 @@ public class CameraEffects : MonoBehaviour
         tempCam = new GameObject("TempCam");
         tempCam.AddComponent<Animator>();
         tempCam.transform.localRotation = Quaternion.identity;
-        //tempCam.hideFlags = HideFlags.HideAndDontSave;
+        tempCam.hideFlags = HideFlags.HideAndDontSave;
     }
 
     private void OnDestroy()

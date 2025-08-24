@@ -32,7 +32,7 @@ public class HudHandler : MonoBehaviour
         float mouseX = Input.GetAxis("Mouse X");
         float mouseY = Input.GetAxis("Mouse Y");
 
-        Vector3 targetSwayPos = new Vector3(-mouseX, -mouseY, 0) * swayAmount;
+        Vector3 targetSwayPos = new Vector3(-mouseX, -mouseY, 0) * swayAmount/100;
         swayPosOffset = Vector3.Lerp(swayPosOffset, targetSwayPos, Time.deltaTime * swaySmooth);
 
         Vector3 targetSwayRot = new Vector3(mouseY, -mouseX, 0) * swayRotation;

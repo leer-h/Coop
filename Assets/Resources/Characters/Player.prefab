@@ -73,7 +73,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -244,7 +244,7 @@ GameObject:
   - component: {fileID: 2381323854680127331}
   - component: {fileID: 4986553801403308969}
   - component: {fileID: 5783443520077736910}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: hand
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -358,7 +358,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d41e7c5f78a31f544a99db41f0411e88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::HudHandler
-  cameraEffector: {fileID: 7581449793376326129}
   cameraTransform: {fileID: 4969565072033818767}
   positionOffset: {x: 0.42, y: -0.34, z: 0.5}
   rotationOffset: {x: 60.9, y: 0, z: 0}

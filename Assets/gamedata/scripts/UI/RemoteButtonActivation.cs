@@ -18,20 +18,6 @@ public class RemoteButtonActivation : MonoBehaviour
         {
             var pointer = new PointerEventData(EventSystem.current);
             ExecuteEvents.Execute(lastSelected.gameObject, pointer, ExecuteEvents.pointerClickHandler);
-
-            lastSelected.transform.DOJump(
-                lastSelected.transform.position + lastSelected.transform.forward * 0.1f,
-                0.1f,
-                1,
-                0.2f
-            ).SetEase(Ease.OutQuad).OnComplete(() =>
-                lastSelected.transform.DOJump(
-                    lastSelected.transform.position - lastSelected.transform.forward * 0.1f,
-                    0.1f,
-                    1,
-                    0.2f
-                ).SetEase(Ease.InQuad)
-            );
         }
     }
 
