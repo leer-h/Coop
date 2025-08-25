@@ -363,9 +363,25 @@ MonoBehaviour:
   rotationOffset: {x: 60.9, y: 0, z: 0}
   followSpeed: 10
   rotateSpeed: 10
-  swayAmount: 0.01
+  swayAmount: 1
   swayRotation: 1
   swaySmooth: 6
+  jumpOffset: {x: 0.01, y: 0.01, z: 0}
+  landOffset: {x: 0, y: -0.015, z: 0}
+  crouchOffset: {x: 0, y: 0.01, z: 0}
+  standOffset: {x: 0, y: -0.01, z: 0}
+  moveOffsetMultiplier: 0.0025
+  jumpRotation: {x: -1, y: 0, z: 0}
+  landRotation: {x: 1, y: 0, z: 0}
+  crouchRotation: {x: 0, y: 0, z: 0}
+  standRotation: {x: 0, y: 0, z: 0}
+  jumpDuration: 0.5
+  landDuration: 0.12
+  crouchDuration: 0
+  standDuration: 0
+  moveDuration: 0.1
+  returnDuration: 0.18
+  returnDelay: 0.08
 --- !u!1 &2537136184356045372
 GameObject:
   m_ObjectHideFlags: 0
