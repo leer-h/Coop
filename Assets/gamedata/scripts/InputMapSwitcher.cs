@@ -1,9 +1,11 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System;
 
 public class InputMapSwitcher : MonoBehaviour
 {
     private PlayerInput playerInput;
+    public static event Action<string> OnInputMapSwitch;
 
     private void Awake()
     {
@@ -12,13 +14,19 @@ public class InputMapSwitcher : MonoBehaviour
 
     public void SwitchToUI()
     {
-        playerInput.SwitchCurrentActionMap("WorldUI");
-        Debug.Log("Input Switched to UI");
+        string mapName = "WorldUI";
+        playerInput.SwitchCurrentActionMap(mapName);
+        Debug.Log($"Input Switched to {mapName}");
+
+        OnInputMapSwitch?.Invoke(mapName);
     }
 
     public void SwitchToGameplay()
     {
-        playerInput.SwitchCurrentActionMap("Gameplay");
-        Debug.Log("Input Switched to Gameplay");
+        string mapName = "Gameplay";
+        playerInput.SwitchCurrentActionMap(mapName);
+        Debug.Log($"Input Switched to {mapName}");
+
+        OnInputMapSwitch?.Invoke(mapName);
     }
 }

@@ -30,6 +30,7 @@ public class CharacterMovement : MonoBehaviourPun
     private bool isGrounded;
     private bool isCrouching;
     private bool wasGrounded;
+    private bool isMovementLocked = false;
 
     private Vector2 moveInput;
     private Vector2 lookInput;
@@ -40,6 +41,18 @@ public class CharacterMovement : MonoBehaviourPun
     public static event Action OnLandEvent;
     public static event Action<Vector2> OnMovingEvent;
     public static event Action<bool> OnCrouchEvent;
+
+    private void OnEnable()
+    {
+        CameraEffects.OnManualCamOn += DisableMovement;
+        CameraEffects.OnManualCamOff += EnableMovement;
+    }
+
+    private void OnDisable()
+    {
+        CameraEffects.OnManualCamOn -= DisableMovement;
+        CameraEffects.OnManualCamOff -= EnableMovement;
+    }
 
     private void Start()
     {
@@ -62,7 +75,7 @@ public class CharacterMovement : MonoBehaviourPun
 
     private void Update()
     {
-        if (!photonView.IsMine) return;
+        if (!photonView.IsMine || isMovementLocked) return;
 
         isGrounded = controller.isGrounded;
 
@@ -194,6 +207,16 @@ public class CharacterMovement : MonoBehaviourPun
     public bool IsGrounded()
     {
         return isGrounded;
+    }
+
+    private void DisableMovement()
+    {
+        isMovementLocked = true;
+    }
+
+    private void EnableMovement()
+    {
+        isMovementLocked = false;
     }
 
     public Vector2 GetMoveInput() => moveInput;

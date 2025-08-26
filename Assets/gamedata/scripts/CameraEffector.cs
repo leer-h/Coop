@@ -1,18 +1,28 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using System.Collections;
 using System.Collections.Generic;
+using System;
 
 public class CameraEffects : MonoBehaviour
 {
+    [SerializeField] private Transform camHandler;
+
     private Quaternion baseRotation;
     private Quaternion currentAnimRotation = Quaternion.identity;
     private Coroutine animCoroutine;
+    private Coroutine moveCoroutine;
+    private Vector3 originalPosition;
+    private Quaternion originalRotation;
+    private bool isManualCamActive = false;
 
     private readonly Dictionary<string, AnimationClip> clipCache = new();
 
     private GameObject tempCam;
+
+    public static event Action OnManualCamOn;
+    public static event Action OnManualCamOff;
 
     private void Awake()
     {
@@ -113,6 +123,59 @@ public class CameraEffects : MonoBehaviour
 
         currentAnimRotation = Quaternion.identity;
         animCoroutine = null;
+    }
+
+    public void MoveAndLookAt(Vector3 targetPosition, Vector3 lookAtPoint, float duration, bool isReset = false)
+    {
+        if (!isManualCamActive)
+        {
+            originalPosition = camHandler.position;
+            originalRotation = transform.rotation;
+            isManualCamActive = true;
+            OnManualCamOn?.Invoke();
+        }
+
+        if (moveCoroutine != null)
+            StopCoroutine(moveCoroutine);
+
+        moveCoroutine = StartCoroutine(MoveAndLookAtCoroutine(targetPosition, lookAtPoint, duration, isReset));
+    }
+
+    private IEnumerator MoveAndLookAtCoroutine(Vector3 targetPosition, Vector3 lookAtPoint, float duration, bool isReset)
+    {
+        Vector3 startPos = camHandler.position;
+        Quaternion startRot = transform.rotation;
+
+        Quaternion targetRot = Quaternion.LookRotation(lookAtPoint - targetPosition);
+
+        float timer = 0f;
+
+        while (timer < duration)
+        {
+            float t = timer / duration;
+
+            camHandler.position = Vector3.Lerp(startPos, targetPosition, t);
+            transform.rotation = Quaternion.Slerp(startRot, targetRot, t);
+
+            timer += Time.deltaTime;
+            yield return null;
+        }
+
+        camHandler.position = targetPosition;
+        transform.rotation = targetRot;
+        moveCoroutine = null;
+
+        if (isReset)
+        {
+            isManualCamActive = false;
+            OnManualCamOff?.Invoke();
+        }
+    }
+
+    public void ResetCamPos(float duration)
+    {
+        Vector3 lookAtPoint = originalPosition + originalRotation * Vector3.forward;
+        MoveAndLookAt(originalPosition, lookAtPoint, duration, true);
     }
 
     private void ClearCache()
