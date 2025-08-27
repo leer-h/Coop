@@ -9,7 +9,6 @@ public class CameraEffects : MonoBehaviour
 {
     [SerializeField] private Transform camHandler;
 
-    private Quaternion baseRotation;
     private Quaternion currentAnimRotation = Quaternion.identity;
     private Coroutine animCoroutine;
     private Coroutine moveCoroutine;
@@ -26,8 +25,6 @@ public class CameraEffects : MonoBehaviour
 
     private void Awake()
     {
-        baseRotation = transform.localRotation;
-
         tempCam = new GameObject("TempCam");
         tempCam.AddComponent<Animator>();
         tempCam.transform.localRotation = Quaternion.identity;
@@ -47,8 +44,7 @@ public class CameraEffects : MonoBehaviour
 
     private void Update()
     {
-        baseRotation = transform.localRotation;
-        transform.localRotation = baseRotation * currentAnimRotation;
+        transform.localRotation = transform.localRotation * currentAnimRotation;
     }
 
     public void AddCamEffector(string effectName, float animationMultiplier = 1f, float speed = 1f)
@@ -125,7 +121,7 @@ public class CameraEffects : MonoBehaviour
         animCoroutine = null;
     }
 
-    public void MoveAndLookAt(Vector3 targetPosition, Vector3 lookAtPoint, float duration, bool isReset = false)
+    public void CamMoveAndLookAt(Vector3 targetPosition, Vector3 lookAtPoint, float duration, bool isReset = false)
     {
         if (!isManualCamActive)
         {
@@ -175,7 +171,7 @@ public class CameraEffects : MonoBehaviour
     public void ResetCamPos(float duration)
     {
         Vector3 lookAtPoint = originalPosition + originalRotation * Vector3.forward;
-        MoveAndLookAt(originalPosition, lookAtPoint, duration, true);
+        CamMoveAndLookAt(originalPosition, lookAtPoint, duration, true);
     }
 
     private void ClearCache()

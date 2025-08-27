@@ -13,21 +13,6 @@ public class CameraEffectsEvents : MonoBehaviour
         CharacterMovement.OnMovingEvent += HandleMove;
     }
 
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            var pos = new Vector3(4.555f, 2.5f, 2.77f);
-            var posLook = new Vector3(7.99f, 2.5f, 2.77f);
-            cameraEffects.MoveAndLookAt(pos, posLook, 1f);
-        }
-
-        if (Input.GetKeyDown(KeyCode.L))
-        {
-            cameraEffects.ResetCamPos(1f);
-        }
-    }
-
     private void OnDisable()
     {
         CharacterMovement.OnJumpEvent -= HandleJump;

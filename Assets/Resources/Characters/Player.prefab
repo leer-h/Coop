@@ -563,6 +563,8 @@ GameObject:
   - component: {fileID: 5366471102403848140}
   - component: {fileID: 7581449793376326129}
   - component: {fileID: 4548325627402490163}
+  - component: {fileID: 9176874817409095356}
+  - component: {fileID: 4333125669870406668}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -836,6 +838,32 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cameraEffects: {fileID: 7581449793376326129}
+--- !u!114 &9176874817409095356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4103073132186862774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a2ce7ca532e1f764d87825f7dc9b57d6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PPEffector
+  volume: {fileID: 5366471102403848140}
+--- !u!114 &4333125669870406668
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4103073132186862774}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50ca6f79b4958c54dbd79e65e249965c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PPEffectorEvents
+  ppEffector: {fileID: 9176874817409095356}
 --- !u!1 &4828481565869617489
 GameObject:
   m_ObjectHideFlags: 0
@@ -1249,7 +1277,7 @@ GameObject:
   - component: {fileID: 7874916781694535570}
   m_Layer: 0
   m_Name: Player
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1391,7 +1419,7 @@ MonoBehaviour:
   moveEventInterval: 0.5
   jumpHeight: 2
   gravity: -30
-  crouchHeight: 1
+  crouchHeight: 0
   standHeight: 2
   crouchSpeed: 2
   transitionSpeed: 5
