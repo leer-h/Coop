@@ -1,10 +1,11 @@
-Shader "Custom/URPWaterShader"
+﻿Shader "Custom/URPWaterShader_ExtraWave"
 {
     Properties
     {
         _BaseColor ("Base Color", Color) = (0, 0.5, 0.8, 0.5)
         _WaveSpeed ("Wave Speed", Float) = 0.5
         _WaveScale ("Wave Scale", Float) = 0.1
+        _ExtraWaveHeight ("Wave Height", Float) = 0.02
         _NoiseTex ("Noise Texture", 2D) = "white" {}
         _DepthFactor ("Depth Factor", Float) = 1.0
         _FoamColor ("Foam Color", Color) = (1, 1, 1, 1)
@@ -14,9 +15,9 @@ Shader "Custom/URPWaterShader"
     {
         Tags
         {
-            "RenderType" = "Transparent"
-            "Queue" = "Transparent"
-            "RenderPipeline" = "UniversalPipeline"
+            "RenderType"="Transparent"
+            "Queue"="Transparent"
+            "RenderPipeline"="UniversalPipeline"
         }
         LOD 100
 
@@ -57,6 +58,7 @@ Shader "Custom/URPWaterShader"
                 float4 _BaseColor;
                 float _WaveSpeed;
                 float _WaveScale;
+                float _ExtraWaveHeight;
                 sampler2D _NoiseTex;
                 float4 _NoiseTex_ST;
                 float _DepthFactor;
@@ -71,8 +73,11 @@ Shader "Custom/URPWaterShader"
             {
                 Varyings output;
                 float3 positionWS = TransformObjectToWorld(input.positionOS.xyz);
+
                 float noise = tex2Dlod(_NoiseTex, float4(input.uv * _NoiseTex_ST.xy + _Time.y * _WaveSpeed, 0, 0)).r;
                 positionWS.y += sin(_Time.y + noise * 6.28) * _WaveScale;
+
+                positionWS.y += sin(_Time.y * 2.0 + input.positionOS.x * 0.5 + input.positionOS.z * 0.3) * _ExtraWaveHeight;
 
                 output.positionCS = TransformWorldToHClip(positionWS);
                 output.uv = input.uv;

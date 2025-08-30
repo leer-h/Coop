@@ -8,7 +8,7 @@ public class WaterTrigger : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("MainCamera"))
         {
             OnWaterEnter?.Invoke();
         }
@@ -16,7 +16,7 @@ public class WaterTrigger : MonoBehaviour
 
     private void OnTriggerExit(Collider other)
     {
-        if (other.CompareTag("Player"))
+        if (other.CompareTag("MainCamera"))
         {
             OnWaterExit?.Invoke();
         }
