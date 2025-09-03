@@ -35,6 +35,11 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels: []
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: d969314e9e578f4428fe47ad88254949
+    m_Address: cam_inv_switch
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: db59e2e5973a8b245b66c4dde8ff40bb
     m_Address: cam_land
     m_ReadOnly: 0

@@ -33,9 +33,9 @@ public class RemoteButtonActivation : MonoBehaviour
             EventSystem.current.SetSelectedGameObject(button != null ? button.gameObject : null);
 
             if (button != null)
-                inputMapSwitcher.SwitchToUI();
+                inputMapSwitcher.SwitchInputMap(InputMapSwitcher.InputMap.WorldUI);
             else
-                inputMapSwitcher.SwitchToGameplay();
+                inputMapSwitcher.SwitchInputMap(InputMapSwitcher.InputMap.Gameplay);
         }
     }
 

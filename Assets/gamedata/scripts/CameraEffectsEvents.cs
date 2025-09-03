@@ -11,6 +11,8 @@ public class CameraEffectsEvents : MonoBehaviour
         CharacterMovement.OnLandEvent += HandleLand;
         CharacterMovement.OnCrouchEvent += HandleCrouch;
         CharacterMovement.OnMovingEvent += HandleMove;
+
+        PlayerInventory.OnSwitchInventoryEvent += HandleInventotySwitch;
     }
 
     private void OnDisable()
@@ -19,6 +21,8 @@ public class CameraEffectsEvents : MonoBehaviour
         CharacterMovement.OnLandEvent -= HandleLand;
         CharacterMovement.OnCrouchEvent -= HandleCrouch;
         CharacterMovement.OnMovingEvent -= HandleMove;
+
+        PlayerInventory.OnSwitchInventoryEvent -= HandleInventotySwitch;
     }
 
     private void HandleJump()
@@ -44,5 +48,8 @@ public class CameraEffectsEvents : MonoBehaviour
         cameraEffects.AddCamEffector("cam_move", 15f);
     }
 
-
+    private void HandleInventotySwitch()
+    {
+        cameraEffects.AddCamEffector("cam_inv_switch", 10f,2f);
+    }
 }

@@ -7,25 +7,23 @@ public class InputMapSwitcher : MonoBehaviour
     private PlayerInput playerInput;
     public static event Action<string> OnInputMapSwitch;
 
+    public enum InputMap
+    {
+        Gameplay,
+        WorldUI,
+        Inventory
+    }
+
     private void Awake()
     {
         playerInput = GetComponent<PlayerInput>();
     }
 
-    public void SwitchToUI()
+    public void SwitchInputMap(InputMap map)
     {
-        string mapName = "WorldUI";
+        string mapName = map.ToString();
         playerInput.SwitchCurrentActionMap(mapName);
-        Debug.Log($"Input Switched to {mapName}");
-
-        OnInputMapSwitch?.Invoke(mapName);
-    }
-
-    public void SwitchToGameplay()
-    {
-        string mapName = "Gameplay";
-        playerInput.SwitchCurrentActionMap(mapName);
-        Debug.Log($"Input Switched to {mapName}");
+        Debug.Log($"Input switched to {mapName}");
 
         OnInputMapSwitch?.Invoke(mapName);
     }

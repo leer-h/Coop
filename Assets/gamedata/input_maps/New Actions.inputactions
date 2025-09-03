@@ -68,6 +68,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "InventorySwitch",
+                    "type": "Button",
+                    "id": "aaf3bc1d-80f2-450d-b754-2127a563e33a",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -239,7 +248,7 @@
                 {
                     "name": "",
                     "id": "2853cccc-5ba4-44d0-8573-ccf9b3a96246",
-                    "path": "<Gamepad>/buttonNorth",
+                    "path": "<Gamepad>/rightShoulder",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -343,6 +352,28 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "7b4913ac-8426-4279-9330-e121a1b7474e",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "InventorySwitch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e8a98c15-d318-4d33-8238-8c40186b89ed",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "InventorySwitch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
@@ -689,6 +720,45 @@
                     "processors": "",
                     "groups": "Keyboard&Mouse",
                     "action": "Interact",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Inventory",
+            "id": "a6d12daf-d37a-407f-ae1f-9f892e734f0f",
+            "actions": [
+                {
+                    "name": "InventorySwitch",
+                    "type": "Button",
+                    "id": "d5f10ec3-7024-46be-b87e-e90e52ad3d30",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "c9b09fee-872c-4feb-8a70-2c510c484643",
+                    "path": "<Keyboard>/i",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "InventorySwitch",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f879922a-1755-48c2-83b7-2b9e6469d41c",
+                    "path": "<Gamepad>/buttonNorth",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "InventorySwitch",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
