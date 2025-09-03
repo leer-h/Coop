@@ -26,8 +26,8 @@ public class PPEffectorEvents : MonoBehaviour
 
     private void HandleWaterExit()
     {
-        ppEffector.SetEffect(ppEffector.Chromatic, ppEffector.Chromatic.intensity, 0f, 1f);
-        ppEffector.SetEffect(ppEffector.Panini, ppEffector.Panini.distance, 0f, 1f);
-        ppEffector.SetEffect(ppEffector.White, ppEffector.White.temperature, 0f, 1f);
+        ppEffector.SetEffect(ppEffector.Chromatic, ppEffector.Chromatic.intensity, 0f, 0.5f);
+        ppEffector.SetEffect(ppEffector.Panini, ppEffector.Panini.distance, 0f, 0.5f);
+        ppEffector.SetEffect(ppEffector.White, ppEffector.White.temperature, 0f, 0.5f);
     }
 }
